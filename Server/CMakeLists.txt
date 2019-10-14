@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.15)
+project(Server)
+set(CMAKE_CXX_STANDARD 17)
+set(GCC_COVERAGE_COMPILE_FLAGS "-Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )
+add_executable(Server main.cpp Server.cpp Server.h Client.cpp Client.h)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(Server Threads::Threads)

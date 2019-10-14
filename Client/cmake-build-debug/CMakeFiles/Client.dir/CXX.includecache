@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bem22/code/projects/Hawk/Client/main.cpp
+stdio.h
+-
+sys/socket.h
+-
+arpa/inet.h
+-
+unistd.h
+-
+string.h
+-
+
