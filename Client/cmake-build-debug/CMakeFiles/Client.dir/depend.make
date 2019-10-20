@@ -4,5 +4,6 @@
 CMakeFiles/Client.dir/Client.cpp.o: ../Client.cpp
 CMakeFiles/Client.dir/Client.cpp.o: ../Client.h
 
+CMakeFiles/Client.dir/main.cpp.o: ../Client.h
 CMakeFiles/Client.dir/main.cpp.o: ../main.cpp
 

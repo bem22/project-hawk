@@ -12,16 +12,20 @@
 class Client {
 private:
     int peer_socket;
-
-    char peer_addr_str[16];
-
+    char peer_addr_ip[16];
+    socklen_t peer_addr_len;
 public:
-    sockaddr *peer_addr;
+    sockaddr peer_addr;
+    sockaddr* get_sock_addr();
+    int client_type;
     Client();
     int get_sock();
     int set_socket(int socket);
-    sockaddr* get_sock_addr();
-    char* get_str_addr();
+    char* get_str_ip();
+
+    socklen_t *get_addr_len();
+
+    in_port_t get_in_port();
 };
 
 

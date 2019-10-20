@@ -10,16 +10,16 @@
 
 class Client {
 private:
-    int csocket;
-    struct sockaddr_in servaddr{};
+    int client_socket;
+    struct sockaddr_in server_addr;
+
 public:
     Client ();
-    explicit Client (char* ip, short family, unsigned short port, int type);
-
-    in_addr_t getip();
-    void setip(char *ip);
-    int getsocket();
+    in_addr_t get_ip();
+    void set_ip(char *ip);
+    int get_socket();
     int start();
+    int bind();
 };
 
 

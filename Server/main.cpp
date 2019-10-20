@@ -12,7 +12,7 @@
 #include <map>
 
 int main() {
-    int port = 4999;
+    int port = 4998;
     std::map<int, Client> clients;
     auto *srv = new Server(AF_INET, SOCK_STREAM, 0, port);
     if(srv->bind()) {

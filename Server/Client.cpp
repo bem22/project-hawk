@@ -13,11 +13,19 @@ int Client::get_sock() {
 }
 
 sockaddr *Client::get_sock_addr() {
-    return peer_addr;
+    return &peer_addr;
 }
 
-char* Client::get_str_addr() {
-    return peer_addr->sa_data;
+socklen_t *Client::get_addr_len() {
+    return &peer_addr_len;
+}
+
+char* Client::get_str_ip() {
+    return peer_addr.sa_data;
+}
+
+in_port_t Client::get_in_port() {
+    return((struct sockaddr_in*)&this->peer_addr)->sin_port;
 }
 
 int Client::set_socket(int socket) {

@@ -45,12 +45,14 @@ void Server::listen() {
         auto *client = new Client();
         clients.push_back(client);
 
+        // This is a fd that can be polled on
+        // TODO: read about read/write to fd`s
         int client_socket = accept(
                 server_socket,
                 (struct sockaddr*)client->get_sock_addr(),
-                (socklen_t*) sizeof(client->get_sock_addr()));
+                (socklen_t*) client->get_addr_len());
         client->set_socket(client_socket);
-        std::cout<<"Client "<<client_socket<<" connected"<<'\n'<<std::flush;
+        std::cout<<"Client "<<client_socket<<" connected on port: "<<ntohs(client->get_in_port())<<'\n'<<std::flush;
     }
 }
 
