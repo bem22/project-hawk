@@ -4,16 +4,24 @@ void read_imu_data();
 
 void IMU_init();
 
-int getX_gyro_error();
-int getY_gyro_error();
-int getZ_gyro_error();
+float get_gx();
+float get_gy();
+float get_gz();
 
-int getX_gyro();
-int getY_gyro();
-int getZ_gyro();
+float get_ax();
+float get_ay();
+float get_az();
 
-int get_temp();
+int get_g_raw_x();
+int get_g_raw_y();
+int get_g_raw_z();
 
-int getX_acc();
-int getY_acc();
-int getZ_acc();
+int get_a_raw_x();
+int get_a_raw_y();
+int get_a_raw_z();
+
+int get_gyro_error_x();
+int get_gyro_error_y();
+int get_gyro_error_z();
+float get_acc_sensitivity();
+float get_gyro_sensitivity();
