@@ -1,7 +1,7 @@
 void calc_gyro_error();
+void calc_acc_error();
 
 void read_imu_data();
-
 void IMU_init();
 
 float get_gx();
@@ -23,5 +23,8 @@ int get_a_raw_z();
 int get_gyro_error_x();
 int get_gyro_error_y();
 int get_gyro_error_z();
+
+int get_acc_error_x();
+
 float get_acc_sensitivity();
 float get_gyro_sensitivity();

@@ -1,5 +1,6 @@
 #include "config.h"
 #include <Wire.h>
+#include <Arduino.h>
 #include "IMU.h"
 
 /* Declare variables for read and calculated
@@ -20,6 +21,9 @@ float gx, gy, gz;
 
 // gyro error - these are raw values
 float gex, gey, gez;
+
+// acc error on X axis - raw value
+float aex;
 
 
 // Initialize the connection with the MPU through i2c and initialize all variables
@@ -52,6 +56,7 @@ void IMU_init() {
     Wire.write(0b00000000);
 
     calc_gyro_error();
+    calc_acc_error();
 }
 
 // This function will set the gex gey gez values from the mean of readings from the MPU
@@ -60,17 +65,33 @@ void calc_gyro_error () {
     gex = gey = gez = 0;
 
     // Read 2000 values and get the mean
-    for(int i = 0; i < gyro_error_no_reads; i++) {
+    for(int i = 0; i < error_no_reads; i++) {
         read_imu_data();
         gex += g_raw_x;
         gey += g_raw_y;
         gez += g_raw_z;
     }
 
-    gex /= gyro_error_no_reads;
-    gey /= gyro_error_no_reads;
-    gez /= gyro_error_no_reads;
+    gex /= error_no_reads;
+    gey /= error_no_reads;
+    gez /= error_no_reads;
 
+}
+
+void calc_acc_error () {
+    // Set error to 0
+    aex = 0;
+
+    // Read 2000 values and get the mean
+    for(int i = 0; i < error_no_reads; i++) {
+        read_imu_data();
+        aex += a_raw_x;
+
+        // Delay is important so we don't read the same value twice   
+        delay(2);
+    }
+
+    aex = aex / error_no_reads;
 }
 
 void read_imu_data() {
@@ -103,32 +124,32 @@ void read_imu_data() {
 }
 
 float get_gx() {
-    gx = (g_raw_x - gex) / gyro_sensitivity_LSB;
+    gx = (float) (g_raw_x - gex) / gyro_sensitivity_LSB;
     return gx;
 }
 
 float get_gy() {
-    gy = (g_raw_y - gey) / gyro_sensitivity_LSB;
+    gy = (float) (g_raw_y - gey) / gyro_sensitivity_LSB;
     return gy;
 }
 
 float get_gz() {
-    gz = (g_raw_z - gez) / gyro_sensitivity_LSB;
+    gz = (float) (g_raw_z - gez) / gyro_sensitivity_LSB;
     return gz;
 }
 
 float get_ax() {
-    ax = a_raw_x / accel_sensitivity_LSB;
+    ax = (float) a_raw_x / acc_LSB_PI_180;
     return ax;
 }
 
 float get_ay() {
-    ay = a_raw_y / accel_sensitivity_LSB;
+    ay = (float) a_raw_y / acc_LSB_PI_180;
     return ay;
 }
 
 float get_az() {
-    az = a_raw_z / accel_sensitivity_LSB;
+    az = (float) a_raw_z / acc_LSB_PI_180;
     return az; 
 }
 
@@ -165,6 +186,10 @@ int get_gyro_error_y() {
 }
 int get_gyro_error_z() {
     return gez;
+}
+
+int get_acc_error_x() {
+    return aex;
 }
 
 float get_acc_sensitivity() {
