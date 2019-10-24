@@ -1,6 +1,7 @@
 void calc_gyro_error();
 void calc_acc_error();
 
+void read_imu_raw_data();
 void read_imu_data();
 void IMU_init();
 
@@ -28,3 +29,34 @@ int get_acc_error_x();
 
 float get_acc_sensitivity();
 float get_gyro_sensitivity();
+
+void calc_acc_total_vector();
+
+void calc_acc_roll_angle();
+void calc_acc_pitch_angle();
+
+float get_acc_roll_angle();
+float get_acc_pitch_angle();
+
+float get_gyro_roll_angle();
+float get_gyro_pitch_angle();
+float get_gyro_yaw_angle();
+
+float get_angle_roll();
+float get_angle_pitch();
+
+/*
+ * Debugging functions
+ */
+
+void calc_acc_roll_angle_raw();
+void calc_acc_pitch_angle_raw();
+
+float get_acc_roll_angle_raw();
+float get_acc_pitch_angle_raw();
+
+void compute_gyro_angles_raw();
+
+float get_gyro_x_raw();
+float get_gyro_y_raw();
+float get_gyro_z_raw();

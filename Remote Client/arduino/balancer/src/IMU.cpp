@@ -7,31 +7,35 @@
  * values from the MPU 
  */
 
-int16_t a_raw_x, a_raw_y, a_raw_z; 
+int a_raw_x, a_raw_y, a_raw_z; 
 
 // These are set by get_ax/get_ay/get_az
 float ax, ay, az;
 
-int16_t temp;
+int temp;
 
-int16_t g_raw_x, g_raw_y, g_raw_z;
+int g_raw_x, g_raw_y, g_raw_z;
 
 // These are set by get_gx/get_gy/get_gz
 float gx, gy, gz;
 
-// gyro error - these are raw values
-float gex, gey, gez;
+unsigned int acc_total_vector;
 
-// acc error on X axis - raw value
-float aex;
+float angle_pitch_acc, angle_roll_acc, angle_pitch_acc_raw, angle_roll_acc_raw;
+float angle_pitch_gyro, angle_roll_gyro, angle_yaw_gyro;
+float angle_pitch = 0, angle_roll = 0, angle_yaw = 0;
 
 
+long int gex = 0, gey = 0, gez = 0;
+int aex, aey, aez;
+
+int init_angle_flag = 0;
 // Initialize the connection with the MPU through i2c and initialize all variables
 void IMU_init() {
     Wire.begin();
 
     // Set i2c to MPU6050 to 400kHz
-    Wire.setClock(400000UL);
+    Wire.setClock(400000);
 
     Wire.beginTransmission(MPU_addr);
     
@@ -45,37 +49,35 @@ void IMU_init() {
 
     // 0x1B is register 27 in MPU6050 which sets the full scale range for GYRO
     Wire.write(0x1B);
+
+
     // 250 deg/sec max
-    Wire.write(0b00000000);
+    Wire.write(0b00000100);
     
     Wire.endTransmission(false);
 
     // 0x1C is register 27 in MPU6050 which sets the full scale range for ACCELEROMETER
     Wire.write(0x1C); 
-    // +/- 2g max
-    Wire.write(0b00000000);
-
+    // +/- 4g max
+    Wire.write(0b00000100);
+    
     calc_gyro_error();
-    calc_acc_error();
 }
 
 // This function will set the gex gey gez values from the mean of readings from the MPU
 void calc_gyro_error () {
-    // Set error to 0
-    gex = gey = gez = 0;
-
     // Read 2000 values and get the mean
     for(int i = 0; i < error_no_reads; i++) {
-        read_imu_data();
+        read_imu_raw_data();
         gex += g_raw_x;
         gey += g_raw_y;
         gez += g_raw_z;
+        delay(2);
     }
 
     gex /= error_no_reads;
     gey /= error_no_reads;
     gez /= error_no_reads;
-
 }
 
 void calc_acc_error () {
@@ -94,7 +96,51 @@ void calc_acc_error () {
     aex = aex / error_no_reads;
 }
 
+void compute_acc_angles() {
+    calc_acc_total_vector();
+
+    calc_acc_pitch_angle();
+    calc_acc_pitch_angle_raw();
+
+    calc_acc_roll_angle();
+    calc_acc_roll_angle_raw();
+}
+
+void compute_gyro_angles() {
+    if(init_angle_flag) {
+        angle_roll_gyro += (float) gx * refresh_constant;
+        angle_pitch_gyro += (float) gy * refresh_constant;
+        angle_yaw_gyro += (float) gz * refresh_constant;
+    } else {
+        angle_roll_gyro = angle_roll_acc;
+        angle_pitch_gyro = angle_pitch_acc;
+        init_angle_flag = 1;
+    }
+}
+
+// We apply the complementary filter
+void compute_final_angles() {
+    angle_pitch = (float) (angle_pitch_acc * 0.02) + (angle_pitch_gyro * 0.98);
+    angle_roll = (float) (angle_roll_acc * 0.02) + (angle_roll_gyro * 0.98);
+}
+
 void read_imu_data() {
+    read_imu_raw_data();
+
+    ax = (float) a_raw_x / accel_sensitivity_LSB;
+    ay = (float) a_raw_y / accel_sensitivity_LSB;
+    az = (float) a_raw_z / accel_sensitivity_LSB;
+    gx = (float) (g_raw_x - gex) / gyro_sensitivity_LSB;
+    gy = (float) (g_raw_y - gey) / gyro_sensitivity_LSB;
+    gz = (float) (g_raw_z - gez) / gyro_sensitivity_LSB;
+
+    compute_acc_angles();
+    compute_gyro_angles();
+
+    compute_final_angles();
+}
+
+void read_imu_raw_data() {
     
     Wire.beginTransmission(MPU_addr);
     
@@ -123,75 +169,6 @@ void read_imu_data() {
     Wire.endTransmission(true);
 }
 
-float get_gx() {
-    gx = (float) (g_raw_x - gex) / gyro_sensitivity_LSB;
-    return gx;
-}
-
-float get_gy() {
-    gy = (float) (g_raw_y - gey) / gyro_sensitivity_LSB;
-    return gy;
-}
-
-float get_gz() {
-    gz = (float) (g_raw_z - gez) / gyro_sensitivity_LSB;
-    return gz;
-}
-
-float get_ax() {
-    ax = (float) a_raw_x / acc_LSB_PI_180;
-    return ax;
-}
-
-float get_ay() {
-    ay = (float) a_raw_y / acc_LSB_PI_180;
-    return ay;
-}
-
-float get_az() {
-    az = (float) a_raw_z / acc_LSB_PI_180;
-    return az; 
-}
-
-int get_g_raw_x() {
-    read_imu_data();
-    return g_raw_x;
-}
-
-int get_g_raw_y() {
-    return g_raw_y;
-}
-
-int get_g_raw_z() {
-    return g_raw_z;
-}
-
-int get_a_raw_x() {
-    return a_raw_x;
-}
-
-int get_a_raw_y() {
-    return a_raw_y;
-}
-
-int get_a_raw_z() {
-    return a_raw_z;
-}
-
-int get_gyro_error_x() {
-    return gex;
-}
-int get_gyro_error_y() {
-    return gey;
-}
-int get_gyro_error_z() {
-    return gez;
-}
-
-int get_acc_error_x() {
-    return aex;
-}
-
 float get_acc_sensitivity() {
     return accel_sensitivity_LSB;
 }
@@ -199,3 +176,66 @@ float get_acc_sensitivity() {
 float get_gyro_sensitivity() {
     return gyro_sensitivity_LSB;
 }
+
+void calc_acc_total_vector() {
+    acc_total_vector = sqrt((ax*ax) + (ay*ay) + (az*az));
+}
+
+void calc_acc_pitch_angle() {
+    angle_pitch_acc = atan2(-1 * ax, sqrt(ay * ay + az * az)) * TO_DEG_CONST;
+}
+void calc_acc_roll_angle() {
+    angle_roll_acc = atan2(ay, az) * TO_DEG_CONST;
+}
+
+float get_acc_pitch_angle() {
+    return angle_pitch_acc;    
+}
+
+float get_acc_roll_angle() {
+    return angle_roll_acc;
+}
+
+float get_gyro_roll_angle() {
+    return angle_roll_gyro;
+}
+
+float get_gyro_pitch_angle() {
+    return angle_pitch_gyro;
+}
+
+float get_gyro_yaw_angle() {
+    return angle_yaw_gyro;
+}
+
+float get_angle_roll() {
+    return angle_roll;
+}
+
+float get_angle_pitch() {
+    return angle_pitch;
+}
+
+/*
+ * DEBUGGING functions
+ */
+
+void calc_acc_roll_angle_raw() {
+    angle_roll_acc_raw = atan2(ay, az) * TO_DEG_CONST;
+}
+
+float get_acc_roll_angle_raw() {
+    return angle_roll_acc_raw;
+}
+
+void calc_acc_pitch_angle_raw() {
+    angle_pitch_acc_raw = atan2(-1 * ax, sqrt(ay * ay + az * az)) * TO_DEG_CONST; 
+}
+
+float get_acc_pitch_angle_raw() {
+    return angle_pitch_acc_raw;
+}
+
+float get_gyro_x_raw() { return gx; }
+float get_gyro_y_raw() { return g_raw_y; }
+float get_gyro_z_raw() { return g_raw_z; }
