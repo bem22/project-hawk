@@ -61,6 +61,7 @@ void IMU_init() {
     // +/- 4g max
     Wire.write(0b00000100);
     
+    calc_acc_error();
     calc_gyro_error();
 }
 
@@ -81,29 +82,27 @@ void calc_gyro_error () {
 }
 
 void calc_acc_error () {
-    // Set error to 0
-    aex = 0;
 
     // Read 2000 values and get the mean
     for(int i = 0; i < error_no_reads; i++) {
         read_imu_data();
         aex += a_raw_x;
-
+        aey += a_raw_y;
+        aez += a_raw_z;
         // Delay is important so we don't read the same value twice   
         delay(2);
     }
 
     aex = aex / error_no_reads;
+    aey = aey / error_no_reads;
+    aez = aez / error_no_reads - accel_sensitivity_LSB;
+
 }
 
 void compute_acc_angles() {
-    calc_acc_total_vector();
-
     calc_acc_pitch_angle();
-    calc_acc_pitch_angle_raw();
-
     calc_acc_roll_angle();
-    calc_acc_roll_angle_raw();
+    calc_acc_yaw_angle();
 }
 
 void compute_gyro_angles() {
@@ -111,6 +110,7 @@ void compute_gyro_angles() {
         angle_roll_gyro += (float) gx * refresh_constant;
         angle_pitch_gyro += (float) gy * refresh_constant;
         angle_yaw_gyro += (float) gz * refresh_constant;
+
     } else {
         angle_roll_gyro = angle_roll_acc;
         angle_pitch_gyro = angle_pitch_acc;
@@ -125,11 +125,17 @@ void compute_final_angles() {
 }
 
 void read_imu_data() {
+    /* 
+     * This function uses the raw gyro and accelerometer data.
+     * Each value is filtered by the error obtained by averaging
+     * the error in x reads (x = error_no_reads) 
+     */
+
     read_imu_raw_data();
 
-    ax = (float) a_raw_x / accel_sensitivity_LSB;
-    ay = (float) a_raw_y / accel_sensitivity_LSB;
-    az = (float) a_raw_z / accel_sensitivity_LSB;
+    ax = (float) (a_raw_x - aex) / accel_sensitivity_LSB;
+    ay = (float) (a_raw_y - aey) / accel_sensitivity_LSB;
+    az = (float) (a_raw_z - aez) / accel_sensitivity_LSB;
     gx = (float) (g_raw_x - gex) / gyro_sensitivity_LSB;
     gy = (float) (g_raw_y - gey) / gyro_sensitivity_LSB;
     gz = (float) (g_raw_z - gez) / gyro_sensitivity_LSB;
@@ -181,11 +187,18 @@ void calc_acc_total_vector() {
     acc_total_vector = sqrt((ax*ax) + (ay*ay) + (az*az));
 }
 
+
+void calc_acc_roll_angle() {
+    angle_roll_acc = atan2(ay, az) * TO_DEG_CONST;
+}
+
 void calc_acc_pitch_angle() {
     angle_pitch_acc = atan2(-1 * ax, sqrt(ay * ay + az * az)) * TO_DEG_CONST;
 }
-void calc_acc_roll_angle() {
-    angle_roll_acc = atan2(ay, az) * TO_DEG_CONST;
+
+//TODO: Approximate the yaw drift and fill this 
+void calc_acc_yaw_angle() {
+
 }
 
 float get_acc_pitch_angle() {
@@ -219,23 +232,3 @@ float get_angle_pitch() {
 /*
  * DEBUGGING functions
  */
-
-void calc_acc_roll_angle_raw() {
-    angle_roll_acc_raw = atan2(ay, az) * TO_DEG_CONST;
-}
-
-float get_acc_roll_angle_raw() {
-    return angle_roll_acc_raw;
-}
-
-void calc_acc_pitch_angle_raw() {
-    angle_pitch_acc_raw = atan2(-1 * ax, sqrt(ay * ay + az * az)) * TO_DEG_CONST; 
-}
-
-float get_acc_pitch_angle_raw() {
-    return angle_pitch_acc_raw;
-}
-
-float get_gyro_x_raw() { return gx; }
-float get_gyro_y_raw() { return g_raw_y; }
-float get_gyro_z_raw() { return g_raw_z; }

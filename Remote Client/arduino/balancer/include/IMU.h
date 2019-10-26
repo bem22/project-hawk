@@ -34,6 +34,7 @@ void calc_acc_total_vector();
 
 void calc_acc_roll_angle();
 void calc_acc_pitch_angle();
+void calc_acc_yaw_angle();
 
 float get_acc_roll_angle();
 float get_acc_pitch_angle();
