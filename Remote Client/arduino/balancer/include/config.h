@@ -11,8 +11,9 @@ const float refresh_constant = 0.004;
 
 // LSB/g senitivity for the accelerometer 
 const float accel_sensitivity_LSB = 8192.0;
+
 // LSB/s sensitivity for gyroscope: 131.0 for 250deg/sec -- 65.5 for 500deg/sec etc
-const float gyro_sensitivity_LSB = 65.5;
+const float gyro_sensitivity_LSB = 131.0;
 
 const float pi = 3.14159;
 

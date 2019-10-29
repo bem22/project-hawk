@@ -25,7 +25,6 @@ float angle_pitch_acc, angle_roll_acc, angle_pitch_acc_raw, angle_roll_acc_raw;
 float angle_pitch_gyro, angle_roll_gyro, angle_yaw_gyro;
 float angle_pitch = 0, angle_roll = 0, angle_yaw = 0;
 
-
 long int gex = 0, gey = 0, gez = 0;
 int aex, aey, aez;
 
@@ -42,25 +41,36 @@ void IMU_init() {
     // PWR_MGMT_1 register
     Wire.write(0x6B);
 
-    // Set CLKSEL to 0 (selects the 8MHz internal oscilator)
+    /* REGISTER 6B
+     * B0-B2 - Set CLKSEL (selects the 8MHz internal oscilator) // 000
+     * B3 - Disable temp sensor // 0
+     * B4 - N/A
+     * B5 - Cycle // 0
+     * B6 - Sleep mode (1 for on) // 0
+     * B7 - Device reset 
+     */
     Wire.write(0b00000000);
 
-    Wire.endTransmission(false);
+    Wire.endTransmission(true);
+
+    Wire.beginTransmission(MPU_addr);
 
     // 0x1B is register 27 in MPU6050 which sets the full scale range for GYRO
     Wire.write(0x1B);
 
-
     // 250 deg/sec max
-    Wire.write(0b00000100);
-    
-    Wire.endTransmission(false);
+    Wire.write(0b00000000);
+    Wire.endTransmission(true);
+
+    Wire.beginTransmission(MPU_addr);
 
     // 0x1C is register 27 in MPU6050 which sets the full scale range for ACCELEROMETER
     Wire.write(0x1C); 
+
     // +/- 4g max
-    Wire.write(0b00000100);
-    
+    Wire.write(0b00001000);
+    Wire.endTransmission(true);
+
     calc_acc_error();
     calc_gyro_error();
 }
@@ -110,7 +120,6 @@ void compute_gyro_angles() {
         angle_roll_gyro += (float) gx * refresh_constant;
         angle_pitch_gyro += (float) gy * refresh_constant;
         angle_yaw_gyro += (float) gz * refresh_constant;
-
     } else {
         angle_roll_gyro = angle_roll_acc;
         angle_pitch_gyro = angle_pitch_acc;
@@ -139,7 +148,7 @@ void read_imu_data() {
     gx = (float) (g_raw_x - gex) / gyro_sensitivity_LSB;
     gy = (float) (g_raw_y - gey) / gyro_sensitivity_LSB;
     gz = (float) (g_raw_z - gez) / gyro_sensitivity_LSB;
-
+    
     compute_acc_angles();
     compute_gyro_angles();
 
@@ -232,3 +241,7 @@ float get_angle_pitch() {
 /*
  * DEBUGGING functions
  */
+
+int get_raw() {
+    return a_raw_x;
+}

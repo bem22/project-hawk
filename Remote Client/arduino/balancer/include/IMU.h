@@ -61,3 +61,5 @@ void compute_gyro_angles_raw();
 float get_gyro_x_raw();
 float get_gyro_y_raw();
 float get_gyro_z_raw();
+
+int get_raw();
