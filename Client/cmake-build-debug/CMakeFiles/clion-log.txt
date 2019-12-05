@@ -1,4 +1,0 @@
-/home/bem22/tools/clion-2019.2.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/bem22/code/projects/Hawk/Client
--- Configuring done
--- Generating done
--- Build files have been written to: /home/bem22/code/projects/Hawk/Client/cmake-build-debug

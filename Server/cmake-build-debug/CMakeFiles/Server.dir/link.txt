@@ -1,1 +1,0 @@
-/usr/bin/c++   -Wall -g   CMakeFiles/Server.dir/main.cpp.o CMakeFiles/Server.dir/Server.cpp.o CMakeFiles/Server.dir/Client.cpp.o  -o Server -pthread 
