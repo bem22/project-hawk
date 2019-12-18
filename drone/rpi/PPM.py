@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-# PPM.py
-# 2016-02-19
-# Public Domain
-
 import time
 import pigpio # http://abyz.me.uk/rpi/pigpio/python.html
 
