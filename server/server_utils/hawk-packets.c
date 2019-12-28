@@ -31,11 +31,12 @@ void init_packet_params(char* tcp_payload, packet* p) {
 int key_from_string(char* key) {
     int i;
 
-
-    for (i=0; i < NKEYS; i++) {
-        t_symstruct sym = lookuptable[i];
-        if (strncmp(sym.key, key, strlen(key)) == 0)
-            return sym.val;
+    if(strlen(key) > 0 ) {
+        for (i = 0; i < NKEYS; i++) {
+            t_symstruct sym = lookuptable[i];
+            if (strncmp(sym.key, key, strlen(key)) == 0)
+                return sym.val;
+        }
     }
     return UNKNOWN;
 }

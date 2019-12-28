@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
     if(argc != 2) {
         fprintf(stdout, "No params provided, assuming:localhost, port:5000\n");
         strcpy(address, "127.0.0.1");
-        port = 5001;
+        port = 5000;
     } else {
         if(strlen(argv[0]) <= 16) {
             strcpy(address, argv[0]);
@@ -68,7 +68,7 @@ int main(int argc, char* argv[]) {
 
         if(client_socket && p) {
             int no_bytes = write(client_socket, p, strlen(p));
-            printf("bytes sent: %d\n", no_bytes);
+            printf("bytes sent: %drone_utils\n", no_bytes);
             fflush(stdout);
             if(no_bytes == -1) {
                 fprintf(stderr, "Server has gone down.");

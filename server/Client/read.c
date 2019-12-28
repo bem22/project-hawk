@@ -58,14 +58,14 @@ char* read_string() {
 char* add_size(char* p) {
     char buffer[100] = {0};
     unsigned int string_length = strlen(p);
-    sprintf(buffer,"%d", string_length);
+    sprintf(buffer,"%drone_utils", string_length);
     size_t size_string_format_size = 3 + strlen(buffer);
 
     char* size_string_format = (char*) malloc(size_string_format_size + 1);
     if(!size_string_format) {
         return NULL;
     }
-    sprintf(size_string_format, "%d%s", string_length, "BEG");
+    sprintf(size_string_format, "%drone_utils%s", string_length, "BEG");
 
     char* result = (char*) malloc(string_length + size_string_format_size + 1);
     if(!result) {

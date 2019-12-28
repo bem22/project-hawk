@@ -46,7 +46,10 @@ typedef struct packet {
     params para;
 } packet;
 
+
+int process_packet(packet *p, int (*f)(void));
 void init_packet_params(char* tcp_payload, packet* p);
 int key_from_string(char* key);
+
 
 #endif //SERVER_HAWK_PACKETS_H

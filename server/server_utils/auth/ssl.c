@@ -178,7 +178,7 @@ int mains(int count, char *strings[])
         SSL *ssl;
 
         int client = accept(server, &addr, &len);		/* accept connection as usual */
-        printf("Connection: %s:%d\n",
+        printf("Connection: %s:%drone_utils\n",
                inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
         ssl = SSL_new(ctx);         					/* get new SSL state with context */
         SSL_set_fd(ssl, client);						/* set connection socket to SSL state */

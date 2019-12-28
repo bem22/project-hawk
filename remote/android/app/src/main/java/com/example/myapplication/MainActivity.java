@@ -24,6 +24,7 @@ public class MainActivity extends Activity {
     int[] locationsR = new int[2];
 
     static TCPClient tcp;
+    NetworkManager manager = new NetworkManager(tcp);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         circleLeft = findViewById(R.id.circle_left);
         circleRight = findViewById(R.id.circle_right);
+        manager.execute();
     }
 
     @Override
@@ -52,7 +54,7 @@ public class MainActivity extends Activity {
                         break;
                     case KeyEvent.KEYCODE_BUTTON_B:
                         handled = true;
-                        new NetworkManager(tcp).execute("");
+                        manager.addMessage("HAWK 1.0 \n ");
                         break;
                     case KeyEvent.KEYCODE_BUTTON_X:
                         handled = true;
