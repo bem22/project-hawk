@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Project Hawk</string>
+    <string name="header">HAWK 1.0\n</string>
+    <string name="length">LENGTH: </string>
+    <string name="chunk">CHUNK: </string>
 </resources>

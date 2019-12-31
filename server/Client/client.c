@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     // Arguments handling
     if(argc != 2) {
         fprintf(stdout, "No params provided, assuming:localhost, port:5000\n");
-        strcpy(address, "127.0.0.1");
+        strcpy(address, "192.168.0.14");
         port = 5000;
     } else {
         if(strlen(argv[0]) <= 16) {

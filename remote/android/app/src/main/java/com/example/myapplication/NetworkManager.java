@@ -3,16 +3,7 @@ package com.example.myapplication;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.TimeUnit;
 
 public class NetworkManager extends AsyncTask<String, String, TCPClient> {
     private TCPClient tcp;
@@ -53,16 +44,7 @@ public class NetworkManager extends AsyncTask<String, String, TCPClient> {
 
     }
 
-    protected boolean addMessage(String s) {
+    void addPacket(String s) {
         messages.offer(s);
-        return true;
-    }
-
-    protected void popMessage() {
-        try {
-            messages.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }

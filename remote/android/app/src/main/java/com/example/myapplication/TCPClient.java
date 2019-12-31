@@ -9,11 +9,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class TCPClient {
     public static final String TAG = TCPClient.class.getSimpleName();
-    public static final String SERVER_IP = "localhost"; //server IP address
+    public static final String SERVER_IP = "192.168.0.42"; //server IP address
     public static final int SERVER_PORT = 5000;
     // message to send to the server
     private String mServerMessage;
@@ -66,7 +67,7 @@ public class TCPClient {
         mServerMessage = null;
     }
 
-    public void run(ArrayBlockingQueue<String> messages) {
+    void run(ArrayBlockingQueue<String> messages) {
 
         mRun = true;
 
@@ -93,23 +94,18 @@ public class TCPClient {
                     mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     mBufferOut.println(messages.take());
                     mBufferOut.flush();
-    /*
-
-                    //in this while the client listens for the messages sent by the server
-                    while (mRun) {
-
-                        mServerMessage = mBufferIn.readLine();
-
-                        if (mServerMessage != null && mMessageListener != null) {
-                            //call the method messageReceived from MyActivity class
-                            mMessageListener.messageReceived(mServerMessage);
-                        }
-
-                    }
-
-
-                    Log.d("RESPONSE FROM SERVER", "S: Received Message: '" + mServerMessage + "'");
-*/              }
+/*
+//in this while the client listens for the messages sent by the server
+while (mRun) {
+    mServerMessage = mBufferIn.readLine();
+    if (mServerMessage != null && mMessageListener != null) {
+        //call the method messageReceived from MyActivity class
+        mMessageListener.messageReceived(mServerMessage);
+    }
+}
+Log.d("RESPONSE FROM SERVER", "S: Received Message: '" + mServerMessage + "'");
+*/
+                }
             } catch (Exception e) {
                 Log.e("TCP", "S: Error", e);
             } finally {

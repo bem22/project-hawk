@@ -59,6 +59,7 @@ void *handle_connection() {
         }
 
         if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
+            printf("Packet is %s", buffer);
             init_packet_params(buffer, packet);
             process_packet(packet, read_packet_body);
         }
