@@ -1,5 +1,6 @@
 #include "hawk-packets.h"
 #include <stdio.h>
+#include <malloc.h>
 #include "../drone_utils/state.h"
 
 bool action_arm() {
@@ -33,7 +34,7 @@ bool telemetry() {
     return 1;
 }
 
-int process_packet(packet *p, int (*update_packet)(void)) {
+int process_packet(packet *p, int (*update_packet)(packet *p)) {
     switch(p->packet_type) {
         case LAND:
             printf("%s\n", "Drone landing");
@@ -48,7 +49,7 @@ int process_packet(packet *p, int (*update_packet)(void)) {
             action_disarm();
             break;
         case STM:
-            update_packet();
+            update_packet(p);
             action_update_axes();
             break;
         case TELE:

@@ -43,11 +43,12 @@ typedef union params {
 typedef struct packet {
     int packet_len;
     int packet_type;
+    char* params;
     params para;
 } packet;
 
 
-int process_packet(packet *p, int (*f)(void));
+int process_packet(packet *p, int (*f)(packet *p));
 void init_packet_params(char* tcp_payload, packet* p);
 int key_from_string(char* key);
 

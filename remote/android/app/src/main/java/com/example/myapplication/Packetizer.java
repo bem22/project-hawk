@@ -34,7 +34,6 @@ public class Packetizer{
         sb.append(this.header).append("\n");
         sb.append(this.chunk).append(chunk).append((chunk.length() == 3) ? " \n" : "\n");
         sb.append(this.length).append(length).append((length < 100) ? " \n" : "\n");
-        sb.append(this.paramCount).append(0).append(" \n");
 
         Log.d("\n", sb.toString());
         return sb.toString();
@@ -68,6 +67,8 @@ public class Packetizer{
             length += args.get(i).length() + 1;
         }
 
+        length += this.paramCount.length() + 2 + 1;
+
         return length;
     }
 
@@ -77,7 +78,6 @@ public class Packetizer{
         length += this.header.length() + 1;
         length += this.chunk.length() + 4 + 1;
         length += this.length.length() + 3 + 1;
-        length += this.paramCount.length() + 2 + 1;
 
         return length;
     }

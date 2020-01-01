@@ -3,6 +3,8 @@
 #include "hawk-actions.h"
 #include <pthread.h>
 
+size_t header_buffer_size = 30;
+
 void host_setup() {
     server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -22,7 +24,33 @@ int bind_port() {
     }
 }
 
-int read_packet_body(void) {
+int read_packet_params(packet *p) {
+    int recv_length;
+
+    char* params_buffer;
+    size_t params_buffer_size = p->packet_len - header_buffer_size;
+
+    printf("%zu\n", params_buffer_size);
+    // Declare, allocate and memset the params buffer and its size
+    params_buffer = (char *) malloc(params_buffer_size + 1);
+    if (!params_buffer) {
+        return 1;
+    }
+    memset(params_buffer, '\0', sizeof(char)*(params_buffer_size + 1));
+
+    recv_length = recv(remote_fd, params_buffer, params_buffer_size, 0);
+
+    if(recv_length == 0) {
+        free(params_buffer);
+        return 1;
+    }
+
+    p->params = params_buffer;
+    printf("%zu\n", sizeof(p->params));
+    printf("%zu\n", sizeof(params_buffer));
+
+    printf("Params:\n%s\n", p->params);
+
     return 1;
 }
 
@@ -35,25 +63,22 @@ void *handle_connection() {
     // Check if the connection is still alive. while alive... do
     while (recv(remote_fd, &buf,1, MSG_PEEK | MSG_DONTWAIT) != 0) {
         packet *packet;
-
-        packet = malloc(sizeof(packet));
-
-        // Declare, allocate and memset the buffer and its size
-
-        size_t buffer_size = 40;
-
-        buffer = (char *) malloc(buffer_size + 1);
+        packet = malloc(sizeof(struct packet));
+        // Declare, allocate and memset the header buffer and its size
+        buffer = (char *) malloc(header_buffer_size + 1);
         if (!buffer) {
+            free(packet);
             return NULL;
         }
-        memset(buffer, 0, buffer_size + 1);
+        memset(buffer, '\0', sizeof(char) * (header_buffer_size + 1));
 
         // Variable to hold the number of bytes - return value of recv
         size_t recv_length = 0;
 
-        recv_length = recv(remote_fd, buffer, buffer_size, 0);
+        recv_length = recv(remote_fd, buffer, header_buffer_size, 0);
 
         if (recv_length == 0) {
+            free(packet);
             free(buffer);
             break; // client died
         }
@@ -61,7 +86,7 @@ void *handle_connection() {
         if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
             printf("\n%s\n", buffer);
             init_packet_params(buffer, packet);
-            process_packet(packet, read_packet_body);
+            process_packet(packet, read_packet_params);
         }
 
         free(buffer);
@@ -94,6 +119,8 @@ void start_server() {
             // Start the thread
             pthread_create(worker, NULL, handle_connection, NULL);
             pthread_join(*worker, NULL);
+
+            free(worker);
         }
     }
 }
