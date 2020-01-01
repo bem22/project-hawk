@@ -29,7 +29,7 @@ bool action_update_axes() {
     return 1;
 }
 
-bool action_update_aux() {
+bool telemetry() {
     return 1;
 }
 
@@ -48,14 +48,12 @@ int process_packet(packet *p, int (*update_packet)(void)) {
             action_disarm();
             break;
         case STM:
-            printf("%s\n", "Stick moved");
             update_packet();
             action_update_axes();
             break;
-        case SHM:
-            printf("%s\n", "Shoulder moved");
-            update_packet();
-            action_update_aux();
+        case TELE:
+            printf("%s\n", "Telemetry");
+            telemetry();
             break;
         case UNKNOWN:
             printf("%s\n", "unknown action");

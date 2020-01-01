@@ -14,15 +14,16 @@
 #define AUTH 7
 #define LAND 8
 
-#define NKEYS (sizeof(lookuptable) / sizeof(t_symstruct))
+#define NKEYS (int)(sizeof(lookuptable) / sizeof(t_symstruct))
 
 void init_packet_params(char* tcp_payload, packet* p) {
-    char packet_length_str[6] = {'\0'};
-    memcpy(packet_length_str, tcp_payload + 26, 5);
+    char packet_length_str[4] = {'\0'};
+    memcpy(packet_length_str, tcp_payload + 26, 3);
+
     p->packet_len = atoi(packet_length_str);
 
     char packet_type_str[5] = {'\0'};
-    memcpy(packet_type_str, tcp_payload + 15 , 4);
+    memcpy(packet_type_str, tcp_payload + 14 , 4);
     replace(packet_type_str, ' ', '\0');
 
     p->packet_type = key_from_string(packet_type_str);

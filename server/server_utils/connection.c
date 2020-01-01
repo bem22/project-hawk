@@ -40,7 +40,7 @@ void *handle_connection() {
 
         // Declare, allocate and memset the buffer and its size
 
-        size_t buffer_size = 43;
+        size_t buffer_size = 40;
 
         buffer = (char *) malloc(buffer_size + 1);
         if (!buffer) {
@@ -59,7 +59,7 @@ void *handle_connection() {
         }
 
         if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
-            printf("Packet is %s", buffer);
+            printf("\n%s\n", buffer);
             init_packet_params(buffer, packet);
             process_packet(packet, read_packet_body);
         }

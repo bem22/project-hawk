@@ -123,9 +123,9 @@ public class MainActivity extends Activity {
         // Calculate the vertical distance to move by
         // using the input value from one of these physical controls:
         // the left control stick, hat switch, or the right control stick.
-        axes.set(1, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
+        axes.set(1, -getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
         if (axes.get(1) == 0) {
-            axes.set(1, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos));
+            axes.set(1, -getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos));
         }
 
         axes.set(2, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
@@ -133,9 +133,9 @@ public class MainActivity extends Activity {
             axes.set(2, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historyPos));
         }
 
-        axes.set(3, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
+        axes.set(3, -getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
         if (axes.get(3) == 0) {
-            axes.set(3, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos));
+            axes.set(3, -getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos));
         }
 
         axes.set(4, event.getAxisValue(MotionEvent.AXIS_GAS));
@@ -148,12 +148,14 @@ public class MainActivity extends Activity {
         circleLeft.setScaleX(1 + axes.get(5) * 3);
         circleLeft.setScaleY(1 + axes.get(5) * 3);
 
-        circleRight.setX((float)locationsR[0]/3 + axes.get(2) * 500);
-        circleRight.setY((float)locationsR[1] + axes.get(3) * 500);
-        circleLeft.setX(locationsL[0] + axes.get(0) * 500);
-        circleLeft.setY(locationsL[1] + axes.get(1) * 500);
 
-        String packet = gamepad.getPacket(state, axes);
+        circleLeft.setX(locationsL[0] + axes.get(0) * 500);
+        circleLeft.setY(locationsL[1] - axes.get(1) * 500);
+
+        circleRight.setX((float)locationsR[0]/3 + axes.get(2) * 500);
+        circleRight.setY(locationsR[1] - axes.get(3) * 500);
+
+        String packet = gamepad.getAxesPacket(state, axes);
 
         net.addPacket(packet);
 

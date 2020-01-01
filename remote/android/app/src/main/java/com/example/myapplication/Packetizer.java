@@ -16,33 +16,45 @@ public class Packetizer{
     private String header;
     private String chunk;
     private String length;
-
+    private String paramCount;
     public Packetizer() {
 
-        header = "HAWK 1.0\n";
-        chunk = "CHNK: ";
-        length = "LENGTH: ";
+        header = "HAWK 1.0";
+        chunk = "CHNK:";
+        length = "LENGTH:";
+        paramCount = "PARAMC:";
     }
 
     public String packetize(String chunk) {
+        StringBuilder sb = new StringBuilder().append("");
 
-        String packet = "";
 
-        packet += this.header;
-        packet += this.chunk + chunk + "\n";
-        packet += this.length + calculatePacketLength(chunk);
+        int length = calculatePacketLength(chunk);
 
-        return packet;
+        sb.append(this.header).append("\n");
+        sb.append(this.chunk).append(chunk).append((chunk.length() == 3) ? " \n" : "\n");
+        sb.append(this.length).append(length).append((length < 100) ? " \n" : "\n");
+        sb.append(this.paramCount).append(0).append(" \n");
+
+        Log.d("\n", sb.toString());
+        return sb.toString();
     }
 
     public String packetize(String chunk, ArrayList<String> args) {
-        String packet = "";
+        StringBuilder sb = new StringBuilder().append("");
+        int length = calculatePacketLength(chunk, args);
 
-        packet += this.header;
-        packet += this.chunk + chunk + "\n";
-        packet += this.length + calculatePacketLength(chunk, args);
-        Log.d("packet is", packet);
-        return packet;
+        sb.append(this.header).append("\n");
+        sb.append(this.chunk).append(chunk).append((chunk.length() == 3) ? " \n" : "\n");
+        sb.append(this.length).append(length).append((length < 100) ? " \n" : "\n");
+        sb.append(this.paramCount).append(args.size()).append((args.size() < 10) ? " \n" : "\n");
+
+        for(int i=0; i<args.size(); i++) {
+            sb.append(args.get(i)).append("\n");
+        }
+
+        Log.d("\n", sb.toString());
+        return sb.toString();
     }
 
     private int calculatePacketLength(String chunk, ArrayList<String> args) {
@@ -53,7 +65,7 @@ public class Packetizer{
         }
 
         for (int i = 0; i < args.size(); i++) {
-            length += args.get(i).length();
+            length += args.get(i).length() + 1;
         }
 
         return length;
@@ -62,11 +74,10 @@ public class Packetizer{
     private int calculatePacketLength(String chunk) {
         int length = 0;
 
-        length += this.header.length();
-        length += this.chunk.length();
-        length += this.length.length();
-        length += chunk.length();
-
+        length += this.header.length() + 1;
+        length += this.chunk.length() + 4 + 1;
+        length += this.length.length() + 3 + 1;
+        length += this.paramCount.length() + 2 + 1;
 
         return length;
     }
