@@ -18,3 +18,7 @@ bool state_check_parked() {
     }
     return 0;
 }
+
+bool state_is_armed() {
+    return drone_state.ARMED;
+}

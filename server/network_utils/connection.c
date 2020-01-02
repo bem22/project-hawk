@@ -30,7 +30,6 @@ int read_packet_params(packet *p) {
     char* params_buffer;
     size_t params_buffer_size = p->packet_len - header_buffer_size;
 
-    printf("%zu\n", params_buffer_size);
     // Declare, allocate and memset the params buffer and its size
     params_buffer = (char *) malloc(params_buffer_size + 1);
     if (!params_buffer) {
@@ -45,13 +44,20 @@ int read_packet_params(packet *p) {
         return 1;
     }
 
-    p->params = params_buffer;
-    printf("%zu\n", sizeof(p->params));
-    printf("%zu\n", sizeof(params_buffer));
+    char param_count_string[3] = {0};
+    strncpy(param_count_string, params_buffer+7,  2);
 
-    printf("Params:\n%s\n", p->params);
+    int param_count = atoi(param_count_string);
+    p->param_size = param_count;
 
-    return 1;
+    params_buffer+=10;
+
+    for(int i=0; i<param_count; i++) {
+        p->params[i] = calloc(5, sizeof(char));
+        strncpy(p->params[i], params_buffer + 5 * i,4);
+    }
+
+    return 0;
 }
 
 void *handle_connection() {
@@ -84,7 +90,6 @@ void *handle_connection() {
         }
 
         if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
-            printf("\n%s\n", buffer);
             init_packet_params(buffer, packet);
             process_packet(packet, read_packet_params);
         }

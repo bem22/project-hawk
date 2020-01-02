@@ -27,8 +27,6 @@ void init_packet_params(char* tcp_payload, packet* p) {
     replace(packet_type_str, ' ', '\0');
 
     p->packet_type = key_from_string(packet_type_str);
-
-    p->params = NULL;
 }
 
 int key_from_string(char* key) {

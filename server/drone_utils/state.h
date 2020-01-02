@@ -18,6 +18,7 @@ state drone_state;
 
 bool state_init();
 bool state_check_parked();
+bool state_is_armed();
 
 #endif //SERVER_STATE_H
 

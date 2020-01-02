@@ -33,18 +33,11 @@ typedef struct list {
     node *node;
 } list;
 
-
-typedef union params {
-    list params;
-    char* token;
-    int coordinates[2];
-} params;
-
 typedef struct packet {
     int packet_len;
     int packet_type;
-    char* params;
-    params para;
+    int param_size;
+    char* params[10];
 } packet;
 
 

@@ -1,6 +1,7 @@
 #include "hawk-packets.h"
 #include <stdio.h>
 #include <malloc.h>
+#include <stdlib.h>
 #include "../drone_utils/state.h"
 
 bool action_arm() {
@@ -26,8 +27,19 @@ bool action_land() {
     return 1;
 }
 
-bool action_update_axes() {
-    return 1;
+bool action_update_axes(packet *p) {
+    if(state_is_armed()) {
+        drone_state.THROTTLE = atoi(p->params[4]);
+        drone_state.PITCH = atoi(p->params[0]);
+        drone_state.ROLL = atoi(p->params[1]);
+        drone_state.YAW = atoi(p->params[2]);
+
+        for(int i = 0; i< p->param_size; i++) {
+            free(p->params[i]);
+        }
+
+        return 1;
+    } else return 0;
 }
 
 bool telemetry() {
@@ -50,7 +62,8 @@ int process_packet(packet *p, int (*update_packet)(packet *p)) {
             break;
         case STM:
             update_packet(p);
-            action_update_axes();
+            action_update_axes(p);
+            printf("%d %d %d %d \n",drone_state.THROTTLE, drone_state.ROLL, drone_state.PITCH, drone_state.YAW);
             break;
         case TELE:
             printf("%s\n", "Telemetry");
