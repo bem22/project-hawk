@@ -10,9 +10,9 @@ set(CMAKE_USE_PTHREADS_INIT ON)
 SET(CMAKE_C_FLAGS "-pthread  -lpigpio -lrt ${CMAKE_C_FLAGS}")
 
 find_package(Threads REQUIRED)
-find_package(OpenSSL REQUIRED)
+# find_package(OpenSSL REQUIRED)
 find_package(pigpio REQUIRED)
 
 include_directories(${pigpio_INCLUDE_DIRS})
 target_link_libraries(server LINK_PRIVATE ${pigpio_LIBS})
-target_link_libraries(server OpenSSL::SSL)
+# target_link_libraries(server OpenSSL::SSL)
