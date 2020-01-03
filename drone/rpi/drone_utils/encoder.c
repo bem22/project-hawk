@@ -27,8 +27,7 @@ int start_encoder()
 
     gpioSetSignalFunc(SIGINT, stop);
 
-
-    gpioServo(4, 1300);
+    gpioServo(4, 1200);
     time_sleep(8);
     gpioServo(4, 0);
 
