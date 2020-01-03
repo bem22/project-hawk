@@ -23,14 +23,7 @@ void stop(int signum)
 int start_encoder(int value)
 {
 
-
-    gpioSetSignalFunc(SIGINT, stop);
-
-    while(run) {
-        gpioServo(4, value);
-        usleep(5);
-    }
-
+    gpioServo(4, value);
 
     return 0;
 }

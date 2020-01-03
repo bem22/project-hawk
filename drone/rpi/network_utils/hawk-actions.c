@@ -1,17 +1,18 @@
 #include "hawk-packets.h"
 #include <stdio.h>
-#include "../drone_utils/encoder.h"
 #include <stdlib.h>
-#include <pigpio.h>
 #include "../drone_utils/state.h"
+#include "../drone_utils/encoder.h"
+#include <pigpio.h>
+#include <signal.h>
 
 bool action_arm() {
     if(drone_state.ARMED) {
-        start_encoder(1000);
-        if (gpioInitialise() < 0) return -1;
         return 0;
     }
     else {
+        if (gpioInitialise() < 0) return -1;
+        start_encoder(1000);
         state_init();
         return 1;
     }

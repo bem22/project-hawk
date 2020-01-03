@@ -14,7 +14,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class TCPClient {
     public static final String TAG = TCPClient.class.getSimpleName();
-    public static final String SERVER_IP = "192.168.0.42"; //server IP address
+    public static final String SERVER_IP = "192.168.0.20"; //server IP address
     public static final int SERVER_PORT = 5000;
     // message to send to the server
     private String mServerMessage;
