@@ -1,10 +1,7 @@
 #include "network_utils/connection.h"
+#include "drone_utils/encoder.h"
 int main(int argc, char *argv[]) {
-
-    host_setup();
-    bind_port();
     start_server();
-
-
+    start_encoder();
     return 0;
 }

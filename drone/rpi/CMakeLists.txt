@@ -3,7 +3,7 @@ project(server C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(server main.c network_utils/hawk-packets.c network_utils/hawk-packets.h network_utils/hawk-actions.c network_utils/hawk-actions.h network_utils/string-utils.c network_utils/string-utils.h network_utils/connection.h network_utils/connection.c drone_utils/state.c drone_utils/state.h drone_utils/servo.c)
+add_executable(server main.c network_utils/hawk-packets.c network_utils/hawk-packets.h network_utils/hawk-actions.c network_utils/hawk-actions.h network_utils/string-utils.c network_utils/string-utils.h network_utils/connection.h network_utils/connection.c drone_utils/state.c drone_utils/state.h drone_utils/encoder.h drone_utils/encoder.h drone_utils/encoder.c)
 
 set(CMAKE_USE_PTHREADS_INIT true)
 set(CMAKE_USE_PTHREADS_INIT ON)
@@ -31,6 +31,8 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(pigpio
         DEFAULT_MSG
         pigpio_INCLUDE_DIR pigpio_LIBRARY pigpiod_if_LIBRARY pigpiod_if2_LIBRARY)
+
+
 # find_package(OpenSSL REQUIRED)
 # find_package(pigpio REQUIRED)
 # include_directories(${pigpio_INCLUDE_DIRS})

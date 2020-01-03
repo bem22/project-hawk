@@ -103,6 +103,8 @@ void *handle_connection() {
 }
 
 void start_server() {
+    host_setup();
+    bind_port();
     if(listen(server_sock, MAX_PEER) == -1) {
         printf("listen error");
         exit(1);
