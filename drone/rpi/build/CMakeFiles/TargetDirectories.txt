@@ -1,0 +1,3 @@
+/home/bem22/code/projects/project-hawk/drone/rpi/build/CMakeFiles/rebuild_cache.dir
+/home/bem22/code/projects/project-hawk/drone/rpi/build/CMakeFiles/server.dir
+/home/bem22/code/projects/project-hawk/drone/rpi/build/CMakeFiles/edit_cache.dir

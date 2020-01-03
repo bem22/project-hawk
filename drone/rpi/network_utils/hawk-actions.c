@@ -1,11 +1,14 @@
 #include "hawk-packets.h"
 #include <stdio.h>
-#include <malloc.h>
+#include "../drone_utils/encoder.h"
 #include <stdlib.h>
+#include <pigpio.h>
 #include "../drone_utils/state.h"
 
 bool action_arm() {
     if(drone_state.ARMED) {
+        start_encoder(1000);
+        if (gpioInitialise() < 0) return -1;
         return 0;
     }
     else {
@@ -16,6 +19,9 @@ bool action_arm() {
 
 bool action_disarm() {
     if(state_check_parked()) {
+        start_encoder(0);
+        stop();
+        gpioTerminate();
         drone_state.ARMED = 0;
         return 1;
     }
@@ -29,7 +35,11 @@ bool action_land() {
 
 bool action_update_axes(packet *p) {
     if(state_is_armed()) {
+
+
         drone_state.THROTTLE = atoi(p->params[4]);
+        start_encoder(drone_state.THROTTLE);
+
         drone_state.PITCH = atoi(p->params[0]);
         drone_state.ROLL = atoi(p->params[1]);
         drone_state.YAW = atoi(p->params[2]);

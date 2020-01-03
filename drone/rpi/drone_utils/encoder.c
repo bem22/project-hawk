@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
-
+#include <unistd.h>
 #include <pigpio.h>
 
 #define NUM_GPIO 32
@@ -20,19 +20,17 @@ void stop(int signum)
     run = 0;
 }
 
-int start_encoder()
+int start_encoder(int value)
 {
 
-    if (gpioInitialise() < 0) return -1;
 
     gpioSetSignalFunc(SIGINT, stop);
 
-    gpioServo(4, 1200);
-    time_sleep(8);
-    gpioServo(4, 0);
+    while(run) {
+        gpioServo(4, value);
+        usleep(5);
+    }
 
-
-    gpioTerminate();
 
     return 0;
 }
