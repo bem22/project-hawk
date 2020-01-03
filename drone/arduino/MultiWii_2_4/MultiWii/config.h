@@ -132,7 +132,7 @@
       //#define GY_80           // Chinese 10 DOF with  L3G4200D ADXL345 HMC5883L BMP085, LLC
       //#define GY_85           // Chinese 9 DOF with  ITG3205 ADXL345 HMC5883L LLC
       //#define GY_86           // Chinese 10 DOF with  MPU6050 HMC5883L MS5611, LLC
-      //#define GY_88 // Chinese 10 DOF with MPU6050 HMC5883L BMP085, LLC
+      #define GY_88 // Chinese 10 DOF with MPU6050 HMC5883L BMP085, LLC
       //#define GY_521          // Chinese 6  DOF with  MPU6050, LLC
       //#define INNOVWORKS_10DOF // with ITG3200, BMA180, HMC5883, BMP085 available here http://www.diymulticopter.com
       //#define INNOVWORKS_6DOF // with ITG3200, BMA180 available here http://www.diymulticopter.com
@@ -168,7 +168,7 @@
       //#define ITG3200
       //#define MPU3050
       //#define L3G4200D
-      #define MPU6050       //combo + ACC
+      //#define MPU6050       //combo + ACC
       //#define LSM330        //combo + ACC
       
       /* I2C accelerometer */
@@ -187,7 +187,7 @@
 
       /* I2C magnetometer */
       //#define HMC5843
-      #define HMC5883
+      //#define HMC5883
       //#define AK8975
       //#define MAG3110
 
