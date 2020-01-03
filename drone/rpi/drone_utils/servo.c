@@ -4,17 +4,6 @@
 
 #include <pigpio.h>
 
-/*
-# servo_demo.c
-# 2016-10-08
-# Public Domain
-
-gcc -Wall -pthread -o servo_demo servo_demo.c -lpigpio
-
-sudo ./servo_demo          # Send servo pulses to GPIO 4.
-sudo ./servo_demo 23 24 25 # Send servo pulses to GPIO 23, 24, 25.
-*/
-
 #define NUM_GPIO 32
 
 #define MIN_WIDTH 1000
@@ -36,7 +25,7 @@ void stop(int signum)
     run = 0;
 }
 
-int main(int argc, char *argv[])
+int maine(int argc, char *argv[])
 {
     int i, g;
 
