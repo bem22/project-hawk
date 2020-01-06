@@ -3,9 +3,8 @@
 
 #ifndef SERVER_PPMER_H
 #define SERVER_PPMER_H
-
-const short GAP = 300;
-const short NO_WAVES = 3;
+short GAP;
+short NO_WAVES;
 
 typedef struct encoder_struct {
     int channel_count;
@@ -16,9 +15,14 @@ typedef struct encoder_struct {
     int next_wave_id;
     time_t update_time;
     int wave_ids[3];
-    unsigned int widths[18];
+    unsigned int *widths;
 } encoderStructy;
 
 struct encoder_struct ppm_factory;
 
+int init(unsigned int gpio, int channels, int frame_ms);
+void update();
+void update_channel(unsigned int channel, unsigned int width);
+void update_channels(unsigned int *widths);
+void destroy();
 #endif //SERVER_PPMER_H

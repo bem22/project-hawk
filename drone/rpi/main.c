@@ -1,6 +1,28 @@
-#include "network_utils/connection.h"
-#include "drone_utils/encoder.h"
+#include <stdio.h>
+#include "drone_utils/ppmer.h"
 int main(int argc, char *argv[]) {
-    start_server();
+
+    int updates = 0;
+    time_t start_time, end_time;
+
+    init(4, 8, 20);
+
+    start_time = time(NULL);
+
+    for(int i=0; i<ppm_factory.channel_count; i++) {
+        for(int power=1000; i<=2000; i+=2) {
+            update_channel(i, power);
+            updates += 1;
+        }
+    }
+
+    end_time = time(NULL);
+
+    long seconds = end_time - start_time;
+
+    printf("%d updates in %ld seconds\n", updates, seconds);
+
+    destroy();
+
     return 0;
 }

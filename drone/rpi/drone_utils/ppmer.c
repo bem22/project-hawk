@@ -1,9 +1,16 @@
 #include "ppmer.h"
 #include <pigpio.h>
 #include <sys/time.h>
+#include <malloc.h>
+
+
 
 
 int init(unsigned int gpio, int channels, int frame_ms) {
+
+    GAP = 300;
+    NO_WAVES = 3;
+
     if (gpioInitialise() < 0) return -1;
 
     // Initialize all the variables in the PPM encoder structure
@@ -12,6 +19,12 @@ int init(unsigned int gpio, int channels, int frame_ms) {
     ppm_factory.frame_ms = frame_ms;
     ppm_factory.frame_us = frame_ms * 1000;
     ppm_factory.frame_s = frame_ms / 1000;
+
+    // TODO: This will crash
+
+    unsigned int *widths = malloc(sizeof(int) * 18);
+
+    ppm_factory.widths = widths;
 
     // Set the pulse width of each channel to 1000
     for(int i=0; i<channels; i++) {
@@ -95,6 +108,22 @@ void update_channel(unsigned int channel, unsigned int width) {
     update();
 }
 
-void update_channels(int widths[]) {
+void update_channels(unsigned int *widths) {
     ppm_factory.widths = widths;
+    update();
+}
+
+void destroy() {
+    // Stop the current wave
+    gpioWaveTxStop();
+
+    // Clean all waves and wave_ids
+    for(int i=0; i < NO_WAVES; i++) {
+        if (ppm_factory.wave_ids[i] != -1) {
+            gpioWaveDelete(ppm_factory.wave_ids[i]);
+            ppm_factory.wave_ids[i] = -1;
+        }
+    }
+
+    gpioTerminate();
 }
