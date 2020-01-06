@@ -11,8 +11,6 @@ bool action_arm() {
         return 0;
     }
     else {
-        if (gpioInitialise() < 0) return -1;
-        start_encoder(1000);
         state_init();
         return 1;
     }
@@ -20,9 +18,6 @@ bool action_arm() {
 
 bool action_disarm() {
     if(state_check_parked()) {
-        start_encoder(0);
-        stop();
-        gpioTerminate();
         drone_state.ARMED = 0;
         return 1;
     }

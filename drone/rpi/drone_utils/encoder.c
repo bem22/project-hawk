@@ -4,16 +4,13 @@
 #include <unistd.h>
 #include <pigpio.h>
 
-#define NUM_GPIO 32
+#define GAP 300
+#define CHANNEL_COUNT 8
+#define FRAME_MS 27
 
-#define MIN_WIDTH 1000
-#define MAX_WIDTH 2000
+uint8_t widths[8] = {1000};
 
 int run=1;
-
-int step[NUM_GPIO];
-int width[NUM_GPIO];
-int used[NUM_GPIO];
 
 void stop(int signum)
 {
@@ -26,4 +23,8 @@ int start_encoder(int value)
     gpioServo(4, value);
 
     return 0;
+}
+
+int pulse_train(int[6] pulses) {
+
 }
