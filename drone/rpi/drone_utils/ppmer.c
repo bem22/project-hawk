@@ -2,16 +2,36 @@
 #include <pigpio.h>
 #include <sys/time.h>
 #include <malloc.h>
+#include <asm/errno.h>
+#include <errno.h>
 
+int microsleep(long tms)
+{
+    struct timespec ts;
+    int ret;
 
+    if (tms < 0)
+    {
+        errno = EINVAL;
+        return -1;
+    }
 
+    ts.tv_sec = tms / 1000;
+    ts.tv_nsec = (tms % 1000) * 1000000;
+
+    do {
+        ret = nanosleep(&ts, &ts);
+    } while (ret && errno == EINTR);
+
+    return ret;
+}
 
 int init(unsigned int gpio, int channels, int frame_ms) {
 
     GAP = 300;
     NO_WAVES = 3;
 
-    if (gpioInitialise() < 0) return -1;
+    if (gpioInitialise() < 0) return 0;
 
     // Initialize all the variables in the PPM encoder structure
     ppm_factory.gpio = gpio;
@@ -19,8 +39,6 @@ int init(unsigned int gpio, int channels, int frame_ms) {
     ppm_factory.frame_ms = frame_ms;
     ppm_factory.frame_us = frame_ms * 1000;
     ppm_factory.frame_s = frame_ms / 1000;
-
-    // TODO: This will crash
 
     unsigned int *widths = malloc(sizeof(int) * 18);
 
@@ -43,28 +61,28 @@ int init(unsigned int gpio, int channels, int frame_ms) {
     gpioWrite(gpio, PI_LOW);
 
     // Set the update time
-    ppm_factory.update_time = time(NULL);
+    gettimeofday(&ppm_factory.update_time, NULL);
 
     return 0;
 }
 
 void update() {
-    int micros = 0;
+    uint32_t  micros = 0;
     int i, wave_id;
-    time_t remaining_time;
+    struct timeval remaining_time;
 
     // Declare an array of pulses
-    gpioPulse_t waveform[ppm_factory.channel_count * 2];
+    gpioPulse_t waveform[ppm_factory.channel_count * 2 + 2];
 
     // Set the first channel_count * 2 elements in the wave pulse (i.e lows and highs)
-    for(i=0; i < ppm_factory.channel_count; i+=2) {
+    for(i=0; i < ppm_factory.channel_count*2; i+=2) {
         waveform[i] = (gpioPulse_t){1u << ppm_factory.gpio, 0, GAP};
-        waveform[i+1] = (gpioPulse_t){0, 1u << ppm_factory.gpio, ppm_factory.widths[i] - GAP};
-        micros+=1;
+        waveform[i+1] = (gpioPulse_t){0, 1u << ppm_factory.gpio, ppm_factory.widths[i/2] - GAP};
+        micros+=ppm_factory.widths[i];
     }
 
     // Fill with ground for the remaining time of the frame
-    waveform[++i] = (gpioPulse_t){1u << ppm_factory.gpio, 0, GAP};
+    waveform[i] = (gpioPulse_t){1u << ppm_factory.gpio, 0, GAP};
     micros+=GAP;
     waveform[++i] =
             (gpioPulse_t){0, 1u << ppm_factory.gpio, ppm_factory.frame_us - micros};
@@ -83,15 +101,17 @@ void update() {
     if(ppm_factory.next_wave_id >= NO_WAVES) { ppm_factory.next_wave_id = 0; }
 
     // TODO: This time calculus might crash
-    remaining_time = ppm_factory.update_time + ppm_factory.frame_s - time(NULL);
+    struct timeval current_time;
+    gettimeofday(&current_time, NULL);
+    remaining_time.tv_usec = ppm_factory.update_time.tv_usec + ppm_factory.frame_us - current_time.tv_usec;
 
     // Sleep for the remaining time
-    if(remaining_time > 0) {
-        time_sleep(remaining_time);
+    if(remaining_time.tv_usec > 0) {
+        microsleep(remaining_time.tv_usec);
     }
 
     // Update the timer
-    ppm_factory.update_time = time(NULL);
+    gettimeofday(&ppm_factory.update_time, NULL);
 
     // Get next wave_id
     wave_id = ppm_factory.wave_ids[ppm_factory.next_wave_id];

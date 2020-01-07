@@ -13,7 +13,7 @@ typedef struct encoder_struct {
     int frame_us;
     int frame_s;
     int next_wave_id;
-    time_t update_time;
+    struct timeval update_time;
     int wave_ids[3];
     unsigned int *widths;
 } encoderStructy;
