@@ -4,6 +4,8 @@
 #include <malloc.h>
 #include <asm/errno.h>
 #include <errno.h>
+#include <zconf.h>
+#include <string.h>
 
 int microsleep(long tms)
 {
@@ -17,7 +19,7 @@ int microsleep(long tms)
     }
 
     ts.tv_sec = tms / 1000;
-    ts.tv_nsec = (tms % 1000) * 1000000;
+    ts.tv_nsec = tms * 1000;
 
     do {
         ret = nanosleep(&ts, &ts);
@@ -40,10 +42,11 @@ int init(unsigned int gpio, int channels, int frame_ms) {
     ppm_factory.frame_us = frame_ms * 1000;
     ppm_factory.frame_s = frame_ms / 1000;
 
-    unsigned int *widths = malloc(sizeof(int) * 18);
+    ppm_factory.widths = malloc(sizeof(int) * 8);
 
-    ppm_factory.widths = widths;
-
+    for(int i=0; i<3; i++) {
+        ppm_factory.waves[i] = malloc(6 * (channels + 1) * sizeof(gpioPulse_t));
+    }
     // Set the pulse width of each channel to 1000
     for(int i=0; i<channels; i++) {
         ppm_factory.widths[i] = 1000;
@@ -71,24 +74,22 @@ void update() {
     int i, wave_id;
     struct timeval remaining_time;
 
-    // Declare an array of pulses
-    gpioPulse_t waveform[ppm_factory.channel_count * 2 + 2];
 
     // Set the first channel_count * 2 elements in the wave pulse (i.e lows and highs)
     for(i=0; i < ppm_factory.channel_count*2; i+=2) {
-        waveform[i] = (gpioPulse_t){1u << ppm_factory.gpio, 0, GAP};
-        waveform[i+1] = (gpioPulse_t){0, 1u << ppm_factory.gpio, ppm_factory.widths[i/2] - GAP};
+        ppm_factory.waves[ppm_factory.next_wave_id][i] = (gpioPulse_t){1u << ppm_factory.gpio, 0, GAP};
+        ppm_factory.waves[ppm_factory.next_wave_id][i+1] = (gpioPulse_t){0, 1u << ppm_factory.gpio, ppm_factory.widths[i/2] - GAP};
         micros+=ppm_factory.widths[i];
     }
 
     // Fill with ground for the remaining time of the frame
-    waveform[i] = (gpioPulse_t){1u << ppm_factory.gpio, 0, GAP};
+    ppm_factory.waves[ppm_factory.next_wave_id][i] = (gpioPulse_t){1u << ppm_factory.gpio, 0, GAP};
     micros+=GAP;
-    waveform[++i] =
+    ppm_factory.waves[ppm_factory.next_wave_id][++i] =
             (gpioPulse_t){0, 1u << ppm_factory.gpio, ppm_factory.frame_us - micros};
 
     // Create the wave
-    gpioWaveAddGeneric(i, waveform);
+    gpioWaveAddGeneric(18, ppm_factory.waves[ppm_factory.next_wave_id]);
     wave_id = gpioWaveCreate();
 
     // Send the wave to the wire
@@ -100,14 +101,14 @@ void update() {
     // Reset the counter when it reaches NO_WAVES
     if(ppm_factory.next_wave_id >= NO_WAVES) { ppm_factory.next_wave_id = 0; }
 
-    // TODO: This time calculus might crash
     struct timeval current_time;
     gettimeofday(&current_time, NULL);
+    remaining_time.tv_sec = ppm_factory.update_time.tv_sec + ppm_factory.frame_s - current_time.tv_sec;
     remaining_time.tv_usec = ppm_factory.update_time.tv_usec + ppm_factory.frame_us - current_time.tv_usec;
 
     // Sleep for the remaining time
     if(remaining_time.tv_usec > 0) {
-        microsleep(remaining_time.tv_usec);
+        gpioDelay(remaining_time.tv_usec);
     }
 
     // Update the timer
@@ -120,6 +121,8 @@ void update() {
     if(wave_id != -1) {
         gpioWaveDelete(wave_id);
         ppm_factory.wave_ids[ppm_factory.next_wave_id] = -1;
+        //TODO: Memset probably breaks the structure
+        //memset(ppm_factory.waves[ppm_factory.next_wave_id], 0 , (ppm_factory.channel_count + 1) * 2);
     }
 }
 
@@ -140,6 +143,7 @@ void destroy() {
     // Clean all waves and wave_ids
     for(int i=0; i < NO_WAVES; i++) {
         if (ppm_factory.wave_ids[i] != -1) {
+            free(ppm_factory.waves[i]);
             gpioWaveDelete(ppm_factory.wave_ids[i]);
             ppm_factory.wave_ids[i] = -1;
         }

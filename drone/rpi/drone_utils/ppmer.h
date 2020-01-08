@@ -1,5 +1,6 @@
 #include <time.h>
 #include <bits/types/struct_timeval.h>
+#include <pigpio.h>
 
 #ifndef SERVER_PPMER_H
 #define SERVER_PPMER_H
@@ -15,6 +16,7 @@ typedef struct encoder_struct {
     int next_wave_id;
     struct timeval update_time;
     int wave_ids[3];
+    gpioPulse_t *waves[3];
     unsigned int *widths;
 } encoderStructy;
 
