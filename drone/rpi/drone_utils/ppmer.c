@@ -7,27 +7,6 @@
 #include <zconf.h>
 #include <string.h>
 
-int microsleep(long tms)
-{
-    struct timespec ts;
-    int ret;
-
-    if (tms < 0)
-    {
-        errno = EINVAL;
-        return -1;
-    }
-
-    ts.tv_sec = tms / 1000;
-    ts.tv_nsec = tms * 1000;
-
-    do {
-        ret = nanosleep(&ts, &ts);
-    } while (ret && errno == EINTR);
-
-    return ret;
-}
-
 int init(unsigned int gpio, int channels, int frame_ms) {
 
     GAP = 300;
