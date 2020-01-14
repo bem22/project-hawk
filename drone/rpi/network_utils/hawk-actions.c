@@ -33,18 +33,13 @@ bool action_land() {
 bool action_update_axes(packet *p) {
     if(state_is_armed()) {
 
-
-        drone_state.THROTTLE = atoi(p->params[4]);
-        update_channel(1, drone_state.THROTTLE);
-
+        drone_state.THROTTLE = atoi(p->params[1]);
+        drone_state.ROLL = atoi(p->params[3]);
         drone_state.PITCH = atoi(p->params[0]);
-        update_channel(0, drone_state.PITCH);
-
-        drone_state.ROLL = atoi(p->params[1]);
-        update_channel(2, drone_state.ROLL);
-
         drone_state.YAW = atoi(p->params[2]);
-        update_channel(3, drone_state.YAW);
+
+        update_channels();
+
         for(int i = 0; i< p->param_size; i++) {
             free(p->params[i]);
         }
@@ -74,7 +69,6 @@ int process_packet(packet *p, int (*update_packet)(packet *p)) {
         case STM:
             update_packet(p);
             action_update_axes(p);
-            printf("%d %d %d %d \n",drone_state.THROTTLE, drone_state.ROLL, drone_state.PITCH, drone_state.YAW);
             break;
         case TELE:
             printf("%s\n", "Telemetry");

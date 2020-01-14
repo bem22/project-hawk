@@ -2,22 +2,36 @@
 #include "hawk-packets.h"
 #include "hawk-actions.h"
 #include <pthread.h>
+#include <fcntl.h>
+#include <errno.h>
 
 size_t header_buffer_size = 30;
+int connected = 1;
+int optval;
 
 void host_setup() {
     server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_family = AF_INET;
-    bzero(&(server_addr.sin_zero),8);
-    server_sock = socket(AF_INET, SOCK_STREAM, 0);
+    bzero(&(server_addr.sin_zero), 8);
+
+
+    server_sock_tcp = socket(AF_INET, SOCK_STREAM, 0);
+    server_sock_udp = socket(AF_INET, SOCK_DGRAM, 0);
+
+    optval = 1;
+    setsockopt(server_sock_tcp, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval, sizeof(int));
+    setsockopt(server_sock_udp, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval, sizeof(int));
+
     in_size = sizeof(remote_addr);
     connection_count = 0;
 }
 
 int bind_port() {
-    if(bind(server_sock, (struct sockaddr*)&server_addr, sizeof(server_addr)) == 0) {
-        printf("%s %d\n", "server bound on", PORT);
+    if(bind(server_sock_tcp, (struct sockaddr*)&server_addr, sizeof(server_addr)) == 0 &&
+            bind(server_sock_udp, (struct sockaddr*)&server_addr, sizeof(server_addr)) == 0) {
+        printf("%s %d\n", "server bound on", PORT );
+        return 0;
     } else {
         fprintf(stderr, "unable to bind on %d\n", PORT);
         exit(1);
@@ -37,7 +51,7 @@ int read_packet_params(packet *p) {
     }
     memset(params_buffer, '\0', sizeof(char)*(params_buffer_size + 1));
 
-    recv_length = recv(remote_fd, params_buffer, params_buffer_size, 0);
+    recv_length = recv(remote_fd_tcp, params_buffer, params_buffer_size, 0);
 
     if(recv_length == 0) {
         free(params_buffer);
@@ -52,6 +66,7 @@ int read_packet_params(packet *p) {
 
     params_buffer+=10;
 
+    // TODO: Swap calloc for memcopy + bzero
     for(int i=0; i<param_count; i++) {
         p->params[i] = calloc(5, sizeof(char));
         strncpy(p->params[i], params_buffer + 5 * i,4);
@@ -60,33 +75,32 @@ int read_packet_params(packet *p) {
     return 0;
 }
 
-void *handle_connection() {
+void *handle_tcp_connection() {
     // Reconvert the object from void pointer
-
     char buf[1];
     char* buffer = NULL;
 
     // Check if the connection is still alive. while alive... do
-    while (recv(remote_fd, &buf,1, MSG_PEEK | MSG_DONTWAIT) != 0) {
+    while (recv(remote_fd_tcp, &buf, 1, MSG_PEEK | MSG_DONTWAIT) != 0) {
         packet *packet;
         packet = malloc(sizeof(struct packet));
         // Declare, allocate and memset the header buffer and its size
         buffer = (char *) malloc(header_buffer_size + 1);
         if (!buffer) {
             free(packet);
-            return NULL;
+            break;
         }
         memset(buffer, '\0', sizeof(char) * (header_buffer_size + 1));
 
         // Variable to hold the number of bytes - return value of recv
         size_t recv_length = 0;
 
-        recv_length = recv(remote_fd, buffer, header_buffer_size, 0);
+        recv_length = recv(remote_fd_tcp, buffer, header_buffer_size, 0);
 
         if (recv_length == 0) {
             free(packet);
             free(buffer);
-            break; // client died
+            break;
         }
 
         if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
@@ -97,15 +111,36 @@ void *handle_connection() {
         free(buffer);
         free(packet);
     }
-
-    printf("client %d went away :(\n", remote_fd);
+    connected = 0;
+    connection_count--;
+    printf("Client %d went away :(\n", remote_fd_tcp);
     return NULL;
+}
+
+void *handle_udp_connection() {
+    // Reconvert the object from void pointer
+    char buffer[1024];
+    int n;
+
+    while(connected) {
+        n = recvfrom(server_sock_udp, buffer, 1024, 0,
+                     (struct sockaddr *) &remote_addr, &in_size);
+        if (n == -1) {
+            printf("Errno %s", strerror(errno));
+        }
+        fflush(stdin);
+        buffer[n] = '\0';
+        printf("Client : %s\n", buffer);
+    }
+
+    return 0;
 }
 
 void start_server() {
     host_setup();
     bind_port();
-    if(listen(server_sock, MAX_PEER) == -1) {
+
+    if(listen(server_sock_tcp, MAX_PEER) == -1) {
         printf("listen error");
         exit(1);
     }
@@ -114,21 +149,27 @@ void start_server() {
 
     while(connection_count < MAX_PEER) {
 
-        // Create client fds, the main thread will be busy here waiting for clients
-        if ((remote_fd = accept(server_sock, &remote_addr, &in_size)) > -1) {
+        // Create client fds, the main thread_tcp will be busy here waiting for clients
+        if ((remote_fd_tcp = accept(server_sock_tcp, &remote_addr, &in_size)) > -1) {
+            connected = 1;
             printf("%s", "client connected\n");
 
-            // Create a thread as a pointer and save it to the list of threads
-            pthread_t *worker = (pthread_t*) malloc(sizeof(pthread_t));
+            // Create a thread_tcp as a pointer and save it to the list of threads
+            pthread_t *tcp_handler_thread = (pthread_t*) malloc(sizeof(pthread_t));
+            pthread_t *udp_handler_thread = (pthread_t*) malloc(sizeof(pthread_t));
 
-            remote.thread = worker;
+            remote.thread_tcp = tcp_handler_thread;
+            remote.thread_udp = udp_handler_thread;
 
-            // Start the thread
-            pthread_create(worker, NULL, handle_connection, NULL);
-            pthread_join(*worker, NULL);
+            // Start the thread_tcp and thread_udp
+            pthread_create(tcp_handler_thread, NULL, handle_tcp_connection, NULL);
+            pthread_create(udp_handler_thread, NULL, handle_udp_connection, NULL);
 
-            free(worker);
+            pthread_join(*udp_handler_thread, NULL);
+            pthread_join(*tcp_handler_thread, NULL);
+
+            free(tcp_handler_thread);
+            free(udp_handler_thread);
         }
     }
 }
-

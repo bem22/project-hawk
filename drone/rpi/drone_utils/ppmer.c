@@ -1,4 +1,5 @@
 #include "ppmer.h"
+#include "state.h"
 #include <pigpio.h>
 #include <sys/time.h>
 #include <malloc.h>
@@ -21,7 +22,7 @@ int init(unsigned int gpio, int channels, int frame_ms) {
     ppm_factory.frame_us = frame_ms * 1000;
     ppm_factory.frame_s = frame_ms / 1000;
 
-    ppm_factory.widths = malloc(sizeof(int) * 8);
+    ppm_factory.widths = malloc(sizeof(int) * channels);
 
     for(int i=0; i<3; i++) {
         ppm_factory.waves[i] = malloc(6 * (channels + 1) * sizeof(gpioPulse_t));
@@ -111,7 +112,10 @@ void update_channel(unsigned int channel, unsigned int width) {
 }
 
 void update_channels(unsigned int *widths) {
-    ppm_factory.widths = widths;
+    ppm_factory.widths[0] = drone_state.ROLL;
+    ppm_factory.widths[1] = drone_state.PITCH;
+    ppm_factory.widths[2] = drone_state.YAW;
+    ppm_factory.widths[3] = drone_state.THROTTLE;
     update();
 }
 
