@@ -1,13 +1,23 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,9 +25,32 @@ import java.util.List;
 import utils.PadUtils;
 
 public class MainActivity extends Activity {
+    DatagramSocket udpSocket;
+
+    public class ClientSend implements Runnable {
+        @Override
+        public void run() {
+            try {
+                udpSocket = new DatagramSocket(6000);
+                InetAddress serverAddr = InetAddress.getByName("192.168.0.20");
+                byte[] buf = ("The String to Send").getBytes();
+                DatagramPacket packet = new DatagramPacket(buf, buf.length,serverAddr, 5000);
+                udpSocket.send(packet);
+            } catch (SocketException e) {
+                Log.e("Udp:", "Socket Error:", e);
+            } catch (IOException e) {
+                Log.e("Udp Send:", "IO Error:", e);
+            }
+            finally {
+                udpSocket.close();
+            }
+        }
+    }
 
     CircleView circleLeft;
     CircleView circleRight;
+    private TextView sceen = null;
+    private Button launch = null;
 
     RemoteState state = new RemoteState();
     PadUtils gamepad = new PadUtils();
@@ -36,7 +69,17 @@ public class MainActivity extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         circleLeft = findViewById(R.id.circle_left);
         circleRight = findViewById(R.id.circle_right);
+
         net.execute();
+
+        launch = findViewById(R.id.udpbutton);
+        launch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "hello", 1).show();
+                new Thread(new ClientSend()).start();
+            }
+        });
     }
 
     @Override

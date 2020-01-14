@@ -16,8 +16,7 @@ public class TCPClient {
     public static final String TAG = TCPClient.class.getSimpleName();
     public static final String SERVER_IP = "192.168.0.20"; //server IP address
     public static final int SERVER_PORT = 5000;
-    // message to send to the server
-    private String mServerMessage;
+
     // sends message received notifications
     private OnMessageReceived mMessageListener = null;
     // while this is true, the server will continue running
@@ -27,45 +26,6 @@ public class TCPClient {
     // used to read messages from the server
     private BufferedReader mBufferIn;
 
-    /**
-     * Constructor of the class. OnMessagedReceived listens for the messages received from server
-     */
-    TCPClient(OnMessageReceived listener) {
-        mMessageListener = listener;
-    }
-
-    public void sendMessage(final String message) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (mBufferOut != null) {
-                    Log.d(TAG, "Sending: " + message);
-                    mBufferOut.println(message);
-                    mBufferOut.flush();
-                }
-            }
-        };
-        Thread thread = new Thread(runnable);
-        thread.start();
-    }
-
-    /**
-     * Close the connection and release the members
-     */
-    public void stopClient() {
-
-        mRun = false;
-
-        if (mBufferOut != null) {
-            mBufferOut.flush();
-            mBufferOut.close();
-        }
-
-        mMessageListener = null;
-        mBufferIn = null;
-        mBufferOut = null;
-        mServerMessage = null;
-    }
 
     void run(ArrayBlockingQueue<String> messages) {
 
@@ -80,13 +40,16 @@ public class TCPClient {
             //create a socket to make the connection with the server
             Socket socket = new Socket(serverAddr, SERVER_PORT);
 
+            // Disable Nagle's algorithm
+            socket.setTcpNoDelay(true);
+
+
             if(socket.isConnected()) {
                 Log.d("TCP Client", "Connected");
             }
             try {
 
                 while(true) {
-
                     //sends the message to the server
                     mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
@@ -94,18 +57,7 @@ public class TCPClient {
                     mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     mBufferOut.println(messages.take());
                     mBufferOut.flush();
-/*
-//in this while the client listens for the messages sent by the server
-while (mRun) {
-    mServerMessage = mBufferIn.readLine();
-    if (mServerMessage != null && mMessageListener != null) {
-        //call the method messageReceived from MyActivity class
-        mMessageListener.messageReceived(mServerMessage);
-    }
-}
-Log.d("RESPONSE FROM SERVER", "S: Received Message: '" + mServerMessage + "'");
-*/
-                }
+         }
             } catch (Exception e) {
                 Log.e("TCP", "S: Error", e);
             } finally {

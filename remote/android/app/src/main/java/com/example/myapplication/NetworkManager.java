@@ -22,14 +22,7 @@ public class NetworkManager extends AsyncTask<String, String, TCPClient> {
     protected TCPClient doInBackground(String... message) {
 
         //we create a TCPClient object
-        tcp = new TCPClient(new TCPClient.OnMessageReceived() {
-            @Override
-            //here the messageReceived method is implemented
-            public void messageReceived(String message) {
-                //this method calls the onProgressUpdate
-                publishProgress(message);
-            }
-        });
+        tcp = new TCPClient();
         tcp.run(messages);
 
         return null;

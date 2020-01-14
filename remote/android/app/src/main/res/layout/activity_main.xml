@@ -12,6 +12,13 @@
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp">
 
+        <Button
+            android:background="@android:color/holo_blue_bright"
+            android:id="@+id/udpbutton"
+            android:layout_height="50dp"
+            android:layout_width="50dp">
+        </Button>
+
         <RelativeLayout
             android:layout_weight="1"
             android:background="@android:color/holo_blue_bright"
@@ -36,5 +43,12 @@
                 android:layout_height="20sp"
                 android:foreground="@android:color/black"/>
         </RelativeLayout>
+
+        <TextView android:layout_height="100dp"
+            android:layout_width="100dp"
+            android:id="@+id/textView1">
+
+        </TextView>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
