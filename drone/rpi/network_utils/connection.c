@@ -113,6 +113,7 @@ void *handle_tcp_connection() {
     }
     connected = 0;
     connection_count--;
+    fflush(stdout);
     printf("Client %d went away :(\n", remote_fd_tcp);
     return NULL;
 }
@@ -122,15 +123,34 @@ void *handle_udp_connection() {
     char buffer[1024];
     int n;
 
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 100000;
+    if (setsockopt(server_sock_udp, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
+        perror("Error");
+    }
+
     while(connected) {
         n = recvfrom(server_sock_udp, buffer, 1024, 0,
                      (struct sockaddr *) &remote_addr, &in_size);
         if (n == -1) {
-            printf("Errno %s", strerror(errno));
+            break;
         }
-        fflush(stdin);
+
         buffer[n] = '\0';
+
+        packet *packet;
+        packet = malloc(sizeof(struct packet));
+
+
+        if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
+            init_packet_params(buffer, packet);
+            process_packet(packet, read_packet_params);
+        }
+
+        fflush(stdout);
         printf("Client : %s\n", buffer);
+        free(packet);
     }
 
     return 0;
@@ -151,6 +171,7 @@ void start_server() {
 
         // Create client fds, the main thread_tcp will be busy here waiting for clients
         if ((remote_fd_tcp = accept(server_sock_tcp, &remote_addr, &in_size)) > -1) {
+            connection_count++;
             connected = 1;
             printf("%s", "client connected\n");
 
@@ -165,8 +186,8 @@ void start_server() {
             pthread_create(tcp_handler_thread, NULL, handle_tcp_connection, NULL);
             pthread_create(udp_handler_thread, NULL, handle_udp_connection, NULL);
 
-            pthread_join(*udp_handler_thread, NULL);
             pthread_join(*tcp_handler_thread, NULL);
+            pthread_join(*udp_handler_thread, NULL);
 
             free(tcp_handler_thread);
             free(udp_handler_thread);
