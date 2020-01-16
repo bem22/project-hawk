@@ -5,39 +5,25 @@ import android.util.Log;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class NetworkManager extends AsyncTask<String, String, TCPClient> {
-    private TCPClient tcp;
+public class NetworkManager{
+    private TCPClient tcpClient;
+    private UDPClient udpClient;
+
+
     private ArrayBlockingQueue<String> messages = new ArrayBlockingQueue<String>(1500);
 
-    NetworkManager(TCPClient tcp) {
-        this.tcp = tcp;
-    }
-
-    @Override
-    protected void onPreExecute() {
-
-    }
-
-    @Override
-    protected TCPClient doInBackground(String... message) {
-
-        //we create a TCPClient object
-        tcp = new TCPClient();
-        tcp.run(messages);
-
-        return null;
-    }
-
-    @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-        //response received from server
-        Log.d("test", "response " + values[0]);
-        //process server response here....
-
+    NetworkManager() {
+        tcpClient = new TCPClient(messages);
+        udpClient = new UDPClient();
+        tcpClient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        udpClient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     void addPacket(String s) {
         messages.offer(s);
+    }
+
+    void setUDPPacket(String s) {
+        udpClient.setPacket(s);
     }
 }

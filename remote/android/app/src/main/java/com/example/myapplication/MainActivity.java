@@ -25,42 +25,22 @@ import java.util.List;
 import utils.PadUtils;
 
 public class MainActivity extends Activity {
-    DatagramSocket udpSocket;
 
-    public class ClientSend implements Runnable {
-        @Override
-        public void run() {
-            try {
-                udpSocket = new DatagramSocket(6000);
-                InetAddress serverAddr = InetAddress.getByName("192.168.0.20");
-                byte[] buf = ("The String to Send").getBytes();
-                DatagramPacket packet = new DatagramPacket(buf, buf.length,serverAddr, 5000);
-                udpSocket.send(packet);
-            } catch (SocketException e) {
-                Log.e("Udp:", "Socket Error:", e);
-            } catch (IOException e) {
-                Log.e("Udp Send:", "IO Error:", e);
-            }
-            finally {
-                udpSocket.close();
-            }
-        }
-    }
 
     CircleView circleLeft;
     CircleView circleRight;
-    private TextView sceen = null;
-    private Button launch = null;
 
     RemoteState state = new RemoteState();
     PadUtils gamepad = new PadUtils();
 
     ArrayList<Float> axes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
+
     int[] locationsL = new int[2];
     int[] locationsR = new int[2];
 
-    static TCPClient tcp;
-    NetworkManager net = new NetworkManager(tcp);
+
+    NetworkManager net = new NetworkManager();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,16 +50,6 @@ public class MainActivity extends Activity {
         circleLeft = findViewById(R.id.circle_left);
         circleRight = findViewById(R.id.circle_right);
 
-        net.execute();
-
-        launch = findViewById(R.id.udpbutton);
-        launch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "hello", 1).show();
-                new Thread(new ClientSend()).start();
-            }
-        });
     }
 
     @Override
@@ -200,7 +170,7 @@ public class MainActivity extends Activity {
 
         String packet = gamepad.getAxesPacket(state, axes);
 
-        net.addPacket(packet);
+        net.setUDPPacket(packet);
 
     }
 }

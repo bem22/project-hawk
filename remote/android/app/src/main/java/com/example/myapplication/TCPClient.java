@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -12,25 +13,20 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class TCPClient {
-    public static final String TAG = TCPClient.class.getSimpleName();
+public class TCPClient extends AsyncTask<String, String, Void> {
     public static final String SERVER_IP = "192.168.0.20"; //server IP address
     public static final int SERVER_PORT = 5000;
 
-    // sends message received notifications
-    private OnMessageReceived mMessageListener = null;
-    // while this is true, the server will continue running
-    private boolean mRun = false;
-    // used to send messages
-    private PrintWriter mBufferOut;
+    ArrayBlockingQueue<String> messages;
+
+    public TCPClient (ArrayBlockingQueue<String> messages) {
+        this.messages = messages;
+    }
+
     // used to read messages from the server
-    private BufferedReader mBufferIn;
 
-
-    void run(ArrayBlockingQueue<String> messages) {
-
-        mRun = true;
-
+    @Override
+    protected Void doInBackground(String... strings) {
         try {
             //here you must put your computer's IP address.
             InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
@@ -51,13 +47,13 @@ public class TCPClient {
 
                 while(true) {
                     //sends the message to the server
-                    mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+                    // used to send messages
+                    PrintWriter mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
                     //receives the message which the server sends back
-                    mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     mBufferOut.println(messages.take());
                     mBufferOut.flush();
-         }
+                }
             } catch (Exception e) {
                 Log.e("TCP", "S: Error", e);
             } finally {
@@ -70,9 +66,17 @@ public class TCPClient {
             Log.e("TCP", "C: Error", e);
         }
 
+        return null;
     }
 
-    public interface OnMessageReceived {
-        public void messageReceived(String message);
+    @Override
+    protected void onProgressUpdate(String... values) {
+        super.onProgressUpdate(values);
+        //response received from server
+        Log.d("test", "response " + values[0]);
+        //process server response here....
     }
+
+
+
 }

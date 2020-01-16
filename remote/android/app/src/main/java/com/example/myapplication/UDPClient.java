@@ -1,60 +1,61 @@
 package com.example.myapplication;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
-import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.os.Build;
+import android.util.Log;
 
-public class UDPClient
-{
-
-    private InetAddress IPAddress = null;
-    private String message = "Hello Android!" ;
-    private AsyncTask<Void, Void, Void> async_cient;
-    String Message;
+import static java.lang.Thread.sleep;
 
 
-    @SuppressLint({"NewApi", "StaticFieldLeak"})
-    void NachrichtSenden()
-    {
-        async_cient = new AsyncTask<Void, Void, Void>()
-        {
-            @Override
-            protected Void doInBackground(Void... params)
-            {
-                DatagramSocket ds = null;
+public class UDPClient extends AsyncTask<String, String, Void> {
+    private DatagramSocket udpSocket;
+    private InetAddress serverAddr;
+    private boolean idle = true;
+    private String packet = "";
 
-                try
-                {
-                    InetAddress addr = InetAddress.getLocalHost();
-                    ds = new DatagramSocket(5999);
-                    DatagramPacket dp;
-                    dp = new DatagramPacket(Message.getBytes(), Message.getBytes().length, addr, 5999);
-                    ds.send(dp);
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                finally
-                {
-                    if (ds != null)
-                    {
-                        ds.close();
-                    }
-                }
-                return null;
+    @Override
+    protected Void doInBackground(String... strings) {
+
+        try {
+            udpSocket = new DatagramSocket(6000);
+            serverAddr = InetAddress.getByName("192.168.0.20");
+        } catch (SocketException | UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            while(idle) {
+                byte[] buf = packet.getBytes();
+                DatagramPacket packet = new DatagramPacket(buf, buf.length,serverAddr, 5000);
+
+                udpSocket.send(packet);
+                sleep(1);
             }
 
-            protected void onPostExecute(Void result)
-            {
-                super.onPostExecute(result);
+            while(!idle) {
+                sleep(1, 100);
             }
-        };
 
-        async_cient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } catch (IOException e) {
+            Log.e("Udp Send:", "IO Error:", e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void setPacket(String s) {
+        this.packet = s;
+    }
+
+    public void setIdle(boolean idle) {
+        this.idle = idle;
     }
 }
