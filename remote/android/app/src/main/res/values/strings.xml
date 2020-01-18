@@ -3,4 +3,6 @@
     <string name="header">HAWK 1.0\n</string>
     <string name="length">LENGTH: </string>
     <string name="chunk">CHUNK: </string>
+    <string name="title_activity_menu">MenuActivity</string>
+    <string name="title_activity_splash">SplashActivity</string>
 </resources>

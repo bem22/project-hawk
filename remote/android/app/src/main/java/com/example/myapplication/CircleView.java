@@ -10,9 +10,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import java.util.ResourceBundle;
+
 public class CircleView extends View {
 
-    private static final String COLOR_HEX = "#E74300";
+    private static final String COLOR_HEX = "#E5E5E5";
     private final Paint drawPaint;
     private       float size;
 

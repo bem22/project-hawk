@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +10,13 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -21,14 +26,20 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import utils.PadUtils;
+import utils.ViewUtils;
 
 public class MainActivity extends Activity {
 
 
     CircleView circleLeft;
     CircleView circleRight;
+
+    RelativeLayout rightSlate;
+
+    Intent mainIntent = new Intent(MainActivity.this, MenuActivity.class);
 
     RemoteState state = new RemoteState();
     PadUtils gamepad = new PadUtils();
@@ -39,16 +50,20 @@ public class MainActivity extends Activity {
     int[] locationsR = new int[2];
 
 
-    NetworkManager net = new NetworkManager();
-
+    NetworkManager net;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         circleLeft = findViewById(R.id.circle_left);
         circleRight = findViewById(R.id.circle_right);
+        rightSlate = findViewById(R.id.rightSlate);
+
+        net = new NetworkManager();
+
 
     }
 
@@ -62,12 +77,14 @@ public class MainActivity extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 
         if ((event.getSource() & InputDevice.SOURCE_GAMEPAD)
-                == InputDevice.SOURCE_GAMEPAD) {
-            if (event.getRepeatCount() == 0) {
-                net.addPacket(PadUtils.getPacket(state, keyCode));
-                return true;
-            }
+                == InputDevice.SOURCE_GAMEPAD && event.getRepeatCount() == 0) {
+            //net.addPacket(PadUtils.getPacket(state, keyCode));
 
+            if(keyCode == KeyEvent.KEYCODE_BUTTON_START) {
+                Log.d("Hello", "menu");
+                MainActivity.this.startActivity(mainIntent);
+            }
+            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -120,7 +137,6 @@ public class MainActivity extends Activity {
         return 0.0F;
     }
 
-
     private void processJoystickInput(MotionEvent event,
                                       int historyPos) {
         InputDevice inputDevice = event.getDevice();
@@ -154,12 +170,7 @@ public class MainActivity extends Activity {
         axes.set(4, event.getAxisValue(MotionEvent.AXIS_GAS));
         axes.set(5, event.getAxisValue(MotionEvent.AXIS_BRAKE));
 
-
-        circleRight.setScaleX(1 + axes.get(4) * 3);
-        circleRight.setScaleY(1 + axes.get(4) * 3);
-
-        circleLeft.setScaleX(1 + axes.get(5) * 3);
-        circleLeft.setScaleY(1 + axes.get(5) * 3);
+        ViewUtils.setViewColor(rightSlate, (int) (0xFF * axes.get(4)), 0x9F , 0x0, 0x0);
 
 
         circleLeft.setX(locationsL[0] + axes.get(0) * 500);

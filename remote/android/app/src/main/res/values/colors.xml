@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="taupeGray">#8C8C8C</color>
+    <color name="ashGrey">#B2B2B2</color>
+    <color name="platinum">#E5E5E5</color>
+    <color name="smokyBlack">#070707</color>
+    <color name="davysGrey">#595959</color>
+    <color name="graniteGray">#606060</color>
+    <color name="warningYellow">#FAD201</color>
 </resources>
