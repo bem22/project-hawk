@@ -1,5 +1,6 @@
 #include "ppmer.h"
 #include "state.h"
+#include "../network_utils/connection.h"
 #include <pigpio.h>
 #include <sys/time.h>
 #include <malloc.h>
@@ -9,7 +10,6 @@
 #include <string.h>
 
 int init(unsigned int gpio, int channels, int frame_ms) {
-
     GAP = 300;
     NO_WAVES = 3;
 
@@ -43,9 +43,10 @@ int init(unsigned int gpio, int channels, int frame_ms) {
     // Set GPIO pin to ground
     gpioWrite(gpio, PI_LOW);
 
+
     // Set the update time
     gettimeofday(&ppm_factory.update_time, NULL);
-
+    ppm_handler_thread = (pthread_t*) malloc(sizeof(pthread_t));
     return 0;
 }
 
@@ -88,7 +89,7 @@ void update() {
 
     // Sleep for the remaining time
     if(remaining_time.tv_usec > 0) {
-        gpioDelay(remaining_time.tv_usec);
+        gpioSleep(PI_TIME_RELATIVE, 0, remaining_time.tv_usec);
     }
 
     // Update the timer
@@ -101,7 +102,6 @@ void update() {
     if(wave_id != -1) {
         gpioWaveDelete(wave_id);
         ppm_factory.wave_ids[ppm_factory.next_wave_id] = -1;
-        //TODO: Memset probably breaks the structure
         //memset(ppm_factory.waves[ppm_factory.next_wave_id], 0 , (ppm_factory.channel_count + 1) * 2);
     }
 }
@@ -111,12 +111,22 @@ void update_channel(unsigned int channel, unsigned int width) {
     update();
 }
 
-void update_channels(unsigned int *widths) {
-    ppm_factory.widths[0] = drone_state.ROLL;
-    ppm_factory.widths[1] = drone_state.PITCH;
-    ppm_factory.widths[2] = drone_state.YAW;
-    ppm_factory.widths[3] = drone_state.THROTTLE;
-    update();
+void *update_channels() {
+
+    while(!drone_state.ARMED) {
+
+        sleep(1);
+        while (drone_state.ARMED) {
+            ppm_factory.widths[0] = drone_state.ROLL;
+            ppm_factory.widths[1] = drone_state.PITCH;
+            ppm_factory.widths[2] = drone_state.YAW;
+            ppm_factory.widths[3] = drone_state.THROTTLE;
+            update();
+        }
+    }
+
+
+    free(ppm_handler_thread);
 }
 
 void destroy() {

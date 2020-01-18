@@ -33,6 +33,7 @@ struct sockaddr remote_addr;
 socklen_t in_size;
 client remote;
 
+int connected;
 short connection_count;
 
 void host_setup();

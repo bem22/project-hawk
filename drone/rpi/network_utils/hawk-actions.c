@@ -4,8 +4,10 @@
 #include "../drone_utils/state.h"
 #include "../drone_utils/encoder.h"
 #include "../drone_utils/ppmer.h"
+#include "connection.h"
 #include <pigpio.h>
 #include <signal.h>
+
 
 bool action_arm() {
     if(drone_state.ARMED) {
@@ -38,12 +40,6 @@ bool action_update_axes(packet *p) {
         drone_state.PITCH = atoi(p->params[0]);
         drone_state.YAW = atoi(p->params[2]);
 
-        update_channels();
-
-        for(int i = 0; i< p->param_size; i++) {
-            free(p->params[i]);
-        }
-
         return 1;
     } else return 0;
 }
@@ -52,23 +48,21 @@ bool telemetry() {
     return 1;
 }
 
-int process_packet(packet *p, int (*update_packet)(packet *p)) {
+int process_tcp_packet(packet *p, int (*update_packet)(packet *p)) {
     switch(p->packet_type) {
         case LAND:
             printf("%s\n", "Drone landing");
             action_land();
             break;
         case ARM:
+            fflush(stdout);
             printf("%s\n", "Drone armed");
             action_arm();
             break;
         case DARM:
             printf("%s\n", "Drone disarmed");
             action_disarm();
-            break;
-        case STM:
-            update_packet(p);
-            action_update_axes(p);
+            connected=0;
             break;
         case TELE:
             printf("%s\n", "Telemetry");
@@ -77,5 +71,15 @@ int process_packet(packet *p, int (*update_packet)(packet *p)) {
         case UNKNOWN:
             printf("%s\n", "unknown action");
     }
+    return 1;
+}
+
+int process_udp_packet(packet *p) {
+    switch(p->packet_type) {
+        case STM:
+            action_update_axes(p);
+            break;
+    }
+
     return 1;
 }

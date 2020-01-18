@@ -37,12 +37,13 @@ typedef struct packet {
     int packet_len;
     int packet_type;
     int param_size;
-    char* params[10];
+    char params[10][5];
 } packet;
 
 
-int process_packet(packet *p, int (*f)(packet *p));
-void init_packet_params(char* tcp_payload, packet* p);
+int process_tcp_packet(packet *p, int (*update_packet)(packet *p));
+int process_udp_packet(packet *p);
+void init_packet_fields(char* tcp_payload, packet* p);
 int key_from_string(char* key);
 
 

@@ -24,7 +24,9 @@ struct encoder_struct ppm_factory;
 
 int init(unsigned int gpio, int channels, int frame_ms);
 void update();
+pthread_t* ppm_handler_thread;
+
 void update_channel(unsigned int channel, unsigned int width);
-void update_channels();
+void *update_channels();
 void destroy();
 #endif //SERVER_PPMER_H

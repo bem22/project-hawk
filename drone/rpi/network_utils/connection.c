@@ -1,13 +1,15 @@
 #include "connection.h"
 #include "hawk-packets.h"
 #include "hawk-actions.h"
+#include "../drone_utils/ppmer.h"
 #include <pthread.h>
 #include <fcntl.h>
 #include <errno.h>
 
-size_t header_buffer_size = 30;
-int connected = 1;
+
+size_t header_buffer_size = 31;
 int optval;
+connected = 1;
 
 void host_setup() {
     server_addr.sin_port = htons(PORT);
@@ -38,7 +40,7 @@ int bind_port() {
     }
 }
 
-int read_packet_params(packet *p) {
+int read_tcp_packet_params(packet *p) {
     int recv_length;
 
     char* params_buffer;
@@ -66,9 +68,7 @@ int read_packet_params(packet *p) {
 
     params_buffer+=10;
 
-    // TODO: Swap calloc for memcopy + bzero
     for(int i=0; i<param_count; i++) {
-        p->params[i] = calloc(5, sizeof(char));
         strncpy(p->params[i], params_buffer + 5 * i,4);
     }
 
@@ -104,8 +104,8 @@ void *handle_tcp_connection() {
         }
 
         if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
-            init_packet_params(buffer, packet);
-            process_packet(packet, read_packet_params);
+            init_packet_fields(buffer, packet);
+            process_tcp_packet(packet, read_tcp_packet_params);
         }
 
         free(buffer);
@@ -116,6 +116,22 @@ void *handle_tcp_connection() {
     fflush(stdout);
     printf("Client %d went away :(\n", remote_fd_tcp);
     return NULL;
+}
+
+int read_udp_packet_params(packet *p, char* buffer) {
+    char param_count_string[3] = {0};
+    strncpy(param_count_string, buffer + header_buffer_size + 6,  2);
+
+    int param_count = atoi(param_count_string);
+    p->param_size = param_count;
+
+    buffer+=(header_buffer_size + 9);
+
+    for(int i=0; i<param_count; i++) {
+        strncpy(p->params[i], buffer + 5 * i, 4);
+    }
+
+    return 0;
 }
 
 void *handle_udp_connection() {
@@ -142,14 +158,13 @@ void *handle_udp_connection() {
         packet *packet;
         packet = malloc(sizeof(struct packet));
 
-
         if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
-            init_packet_params(buffer, packet);
-            process_packet(packet, read_packet_params);
+            fflush(stdout);
+            init_packet_fields(buffer, packet);
+            read_udp_packet_params(packet, buffer);
+            process_udp_packet(packet);
         }
 
-        fflush(stdout);
-        printf("Client : %s\n", buffer);
         free(packet);
     }
 
@@ -165,6 +180,7 @@ void start_server() {
         exit(1);
     }
 
+    fflush(stdout);
     printf("waiting for connections...\n");
 
     while(connection_count < MAX_PEER) {
@@ -185,7 +201,7 @@ void start_server() {
             // Start the thread_tcp and thread_udp
             pthread_create(tcp_handler_thread, NULL, handle_tcp_connection, NULL);
             pthread_create(udp_handler_thread, NULL, handle_udp_connection, NULL);
-
+            pthread_create(ppm_handler_thread, NULL, update_channels(), NULL);
             pthread_join(*tcp_handler_thread, NULL);
             pthread_join(*udp_handler_thread, NULL);
 

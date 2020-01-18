@@ -16,7 +16,7 @@
 
 #define NKEYS (int)(sizeof(lookuptable) / sizeof(t_symstruct))
 
-void init_packet_params(char* tcp_payload, packet* p) {
+void init_packet_fields(char* tcp_payload, packet* p) {
     char packet_length_str[4] = {'\0'};
     memcpy(packet_length_str, tcp_payload + 26, 3);
 
@@ -41,3 +41,4 @@ int key_from_string(char* key) {
     }
     return UNKNOWN;
 }
+
