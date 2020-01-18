@@ -17,7 +17,7 @@ public class UDPClient extends AsyncTask<String, String, Void> {
     private DatagramSocket udpSocket;
     private InetAddress serverAddr;
     private boolean idle = true;
-    private String packet = "";
+    private String packet = "HA";
 
     @Override
     protected Void doInBackground(String... strings) {
