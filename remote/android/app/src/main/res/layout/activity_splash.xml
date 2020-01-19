@@ -5,11 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SplashActivity">
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp"
-        android:background="@android:color/holo_blue_bright"/>
+        android:background="@color/jet">
+
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="0.7"
+            android:text="@string/app_name"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:textSize="30sp"
+            android:textColor="@color/platinum">
+        </TextView>
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/universitylogo"
+            android:contentDescription="@string/todo" />
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

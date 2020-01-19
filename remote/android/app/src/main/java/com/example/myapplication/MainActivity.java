@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -39,7 +40,6 @@ public class MainActivity extends Activity {
 
     RelativeLayout rightSlate;
 
-    Intent mainIntent = new Intent(MainActivity.this, MenuActivity.class);
 
     RemoteState state = new RemoteState();
     PadUtils gamepad = new PadUtils();
@@ -49,6 +49,7 @@ public class MainActivity extends Activity {
     int[] locationsL = new int[2];
     int[] locationsR = new int[2];
 
+    Intent menuIntent= new Intent(MainActivity.this, MenuActivity.class);
 
     NetworkManager net;
 
@@ -80,9 +81,11 @@ public class MainActivity extends Activity {
                 == InputDevice.SOURCE_GAMEPAD && event.getRepeatCount() == 0) {
             //net.addPacket(PadUtils.getPacket(state, keyCode));
 
+            DynamicToast.makeWarning(this, "You pressed some button");
             if(keyCode == KeyEvent.KEYCODE_BUTTON_START) {
                 Log.d("Hello", "menu");
-                MainActivity.this.startActivity(mainIntent);
+                DynamicToast.makeWarning(this, "You pressed menu").show();
+                MainActivity.this.startActivity(menuIntent);
             }
             return true;
         }

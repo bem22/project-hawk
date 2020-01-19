@@ -25,9 +25,10 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 /* Create an Intent that will start the Menu-Activity. */
                 Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
+                mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 SplashActivity.this.startActivity(mainIntent);
                 SplashActivity.this.finish();
             }
-        }, 1000);
+        }, 1500);
     }
 }

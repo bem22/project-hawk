@@ -5,4 +5,5 @@
     <string name="chunk">CHUNK: </string>
     <string name="title_activity_menu">MenuActivity</string>
     <string name="title_activity_splash">SplashActivity</string>
+    <string name="todo">TODO</string>
 </resources>
