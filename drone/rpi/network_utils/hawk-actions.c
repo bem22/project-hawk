@@ -20,12 +20,9 @@ bool action_arm() {
 }
 
 bool action_disarm() {
-    if(state_check_parked()) {
-        drone_state.ARMED = 0;
-        return 1;
-    }
-    return 0;
 
+    drone_state.ARMED = 0;
+    return 1;
 }
 
 bool action_land() {
@@ -38,8 +35,8 @@ bool action_update_axes(packet *p) {
         drone_state.THROTTLE = atoi(p->params[1]);
         drone_state.ROLL = atoi(p->params[3]);
         drone_state.PITCH = atoi(p->params[0]);
-        drone_state.YAW = atoi(p->params[2]);
-
+        drone_state.YAW = atoi(p->params[4]);
+        fflush(stdout);
         return 1;
     } else return 0;
 }
@@ -62,7 +59,6 @@ int process_tcp_packet(packet *p, int (*update_packet)(packet *p)) {
         case DARM:
             printf("%s\n", "Drone disarmed");
             action_disarm();
-            connected=0;
             break;
         case TELE:
             printf("%s\n", "Telemetry");

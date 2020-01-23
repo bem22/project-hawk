@@ -18,7 +18,6 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         setContentView(R.layout.activity_splash);
         new Handler().postDelayed(new Runnable(){
             @Override
@@ -26,8 +25,8 @@ public class SplashActivity extends AppCompatActivity {
                 /* Create an Intent that will start the Menu-Activity. */
                 Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
                 mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                SplashActivity.this.startActivity(mainIntent);
-                SplashActivity.this.finish();
+                startActivity(mainIntent);
+                finish();
             }
         }, 1500);
     }

@@ -1,33 +1,19 @@
 package com.example.myapplication;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
 
 import utils.PadUtils;
 import utils.ViewUtils;
@@ -40,7 +26,6 @@ public class MainActivity extends Activity {
 
     RelativeLayout rightSlate;
 
-
     RemoteState state = new RemoteState();
     PadUtils gamepad = new PadUtils();
 
@@ -49,23 +34,25 @@ public class MainActivity extends Activity {
     int[] locationsL = new int[2];
     int[] locationsR = new int[2];
 
-    Intent menuIntent= new Intent(MainActivity.this, MenuActivity.class);
-
     NetworkManager net;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         circleLeft = findViewById(R.id.circle_left);
         circleRight = findViewById(R.id.circle_right);
         rightSlate = findViewById(R.id.rightSlate);
 
         net = new NetworkManager();
+    }
 
 
+    @Override
+    protected void onDestroy() {
+        net.closeConnections();
+        super.onDestroy();
     }
 
     @Override
@@ -79,17 +66,28 @@ public class MainActivity extends Activity {
 
         if ((event.getSource() & InputDevice.SOURCE_GAMEPAD)
                 == InputDevice.SOURCE_GAMEPAD && event.getRepeatCount() == 0) {
-            //net.addPacket(PadUtils.getPacket(state, keyCode));
 
-            DynamicToast.makeWarning(this, "You pressed some button");
+            DynamicToast.makeWarning(this, "You pressed some button").show();
             if(keyCode == KeyEvent.KEYCODE_BUTTON_START) {
                 Log.d("Hello", "menu");
                 DynamicToast.makeWarning(this, "You pressed menu").show();
-                MainActivity.this.startActivity(menuIntent);
+                Intent menuIntent= new Intent(this, MenuActivity.class);
+                startActivityForResult(menuIntent, 1);
+            }
+
+            if(keyCode == KeyEvent.KEYCODE_BUTTON_A || keyCode == KeyEvent.KEYCODE_BUTTON_B || keyCode == KeyEvent.KEYCODE_BUTTON_X || keyCode == KeyEvent.KEYCODE_BUTTON_Y) {
+                net.addTCPPacket(PadUtils.getPacket(state, keyCode));
             }
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == 2) {
+            this.finishAndRemoveTask();
+        }
     }
 
     @Override

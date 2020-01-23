@@ -113,7 +113,7 @@ void update_channel(unsigned int channel, unsigned int width) {
 
 void *update_channels() {
 
-    while(!drone_state.ARMED) {
+    while(!drone_state.ARMED && connected) {
 
         sleep(1);
         while (drone_state.ARMED) {
@@ -124,9 +124,6 @@ void *update_channels() {
             update();
         }
     }
-
-
-    free(ppm_handler_thread);
 }
 
 void destroy() {
@@ -143,4 +140,7 @@ void destroy() {
     }
 
     gpioTerminate();
+
+
+    free(ppm_handler_thread);
 }

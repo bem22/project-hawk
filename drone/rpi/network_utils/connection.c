@@ -199,11 +199,13 @@ void start_server() {
             remote.thread_udp = udp_handler_thread;
 
             // Start the thread_tcp and thread_udp
-            pthread_create(tcp_handler_thread, NULL, handle_tcp_connection, NULL);
-            pthread_create(udp_handler_thread, NULL, handle_udp_connection, NULL);
-            pthread_create(ppm_handler_thread, NULL, update_channels(), NULL);
+            pthread_create(tcp_handler_thread, NULL, &handle_tcp_connection, NULL);
+            pthread_create(udp_handler_thread, NULL, &handle_udp_connection, NULL);
+            pthread_create(ppm_handler_thread, NULL, &update_channels, NULL);
+
             pthread_join(*tcp_handler_thread, NULL);
             pthread_join(*udp_handler_thread, NULL);
+            pthread_join(*ppm_handler_thread, NULL);
 
             free(tcp_handler_thread);
             free(udp_handler_thread);

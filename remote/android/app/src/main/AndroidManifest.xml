@@ -14,7 +14,7 @@
         <activity
             android:name=".SplashActivity"
             android:label="@string/title_activity_splash"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,15 +26,15 @@
         <activity
             android:name=".MainActivity"
             android:label="MainActivity"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
             android:name=".MenuActivity"
             android:label="@string/title_activity_menu"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.Dialog">
+            android:screenOrientation="sensorLandscape"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
     </application>
