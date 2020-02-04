@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../drone_utils/state.h"
-#include "../drone_utils/encoder.h"
 #include "../drone_utils/ppmer.h"
 #include "connection.h"
 #include <pigpio.h>
@@ -36,6 +35,11 @@ bool action_update_axes(packet *p) {
         drone_state.ROLL = atoi(p->params[3]);
         drone_state.PITCH = atoi(p->params[0]);
         drone_state.YAW = atoi(p->params[4]);
+        drone_state.AUX1 = atoi(p->params[2]);
+        drone_state.AUX2 = atoi(p->params[5]);
+        drone_state.AUX3 = atoi(p->params[6]);
+        drone_state.AUX4 = atoi(p->params[7]);
+
         fflush(stdout);
         return 1;
     } else return 0;

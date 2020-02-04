@@ -89,7 +89,9 @@ void update() {
 
     // Sleep for the remaining time
     if(remaining_time.tv_usec > 0) {
-        gpioSleep(PI_TIME_RELATIVE, 0, remaining_time.tv_usec);
+        fflush(stdout);
+        printf("%ld\n", remaining_time.tv_usec);
+        gpioSleep(PI_TIME_RELATIVE, 0, remaining_time.tv_usec-2000);
     }
 
     // Update the timer
@@ -106,21 +108,17 @@ void update() {
     }
 }
 
-void update_channel(unsigned int channel, unsigned int width) {
-    ppm_factory.widths[channel] = width;
-    update();
-}
-
 void *update_channels() {
 
     while(!drone_state.ARMED && connected) {
-
         sleep(1);
         while (drone_state.ARMED) {
             ppm_factory.widths[0] = drone_state.ROLL;
             ppm_factory.widths[1] = drone_state.PITCH;
             ppm_factory.widths[2] = drone_state.YAW;
             ppm_factory.widths[3] = drone_state.THROTTLE;
+            ppm_factory.widths[4] = drone_state.AUX1;
+
             update();
         }
     }
@@ -138,9 +136,7 @@ void destroy() {
             ppm_factory.wave_ids[i] = -1;
         }
     }
-
     gpioTerminate();
-
 
     free(ppm_handler_thread);
 }

@@ -12,6 +12,10 @@ typedef struct state {
     unsigned short YAW;
     unsigned short PITCH;
     unsigned short ROLL;
+    unsigned short AUX1;
+    unsigned short AUX2;
+    unsigned short AUX3;
+    unsigned short AUX4;
 } state;
 
 state drone_state;
