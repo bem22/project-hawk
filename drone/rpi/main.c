@@ -7,4 +7,6 @@ int main(void) {
     start_server();
 
     destroy();
+
+    return 0;
 }

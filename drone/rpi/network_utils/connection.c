@@ -2,6 +2,7 @@
 #include "hawk-packets.h"
 #include "hawk-actions.h"
 #include "../drone_utils/ppmer.h"
+#include "../drone_utils/state.h"
 #include <pthread.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -112,6 +113,7 @@ void *handle_tcp_connection() {
         free(packet);
     }
     connected = 0;
+    drone_state.ARMED = 0;
     connection_count--;
     fflush(stdout);
     printf("Client %d went away :(\n", remote_fd_tcp);

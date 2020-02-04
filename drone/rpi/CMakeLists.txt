@@ -7,6 +7,13 @@ add_executable(server main.c network_utils/hawk-packets.c network_utils/hawk-pac
 
 set(CMAKE_USE_PTHREADS_INIT true)
 set(CMAKE_USE_PTHREADS_INIT ON)
+set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+set(CMAKE_HAVE_THREADS_LIBRARY 1)
+set(CMAKE_USE_WIN32_THREADS_INIT 0)
+set(CMAKE_USE_PTHREADS_INIT 1)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+
+
 SET(CMAKE_C_FLAGS "-pthread  -lpigpio -lrt ${CMAKE_C_FLAGS}")
 
 find_package(Threads REQUIRED)

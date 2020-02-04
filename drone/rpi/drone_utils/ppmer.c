@@ -55,7 +55,6 @@ void update() {
     int i, wave_id;
     struct timeval remaining_time;
 
-
     // Set the first channel_count * 2 elements in the wave pulse (i.e lows and highs)
     for(i=0; i < ppm_factory.channel_count*2; i+=2) {
         ppm_factory.waves[ppm_factory.next_wave_id][i] = (gpioPulse_t){1u << ppm_factory.gpio, 0, GAP};
@@ -90,8 +89,7 @@ void update() {
     // Sleep for the remaining time
     if(remaining_time.tv_usec > 0) {
         fflush(stdout);
-        printf("%ld\n", remaining_time.tv_usec);
-        gpioSleep(PI_TIME_RELATIVE, 0, remaining_time.tv_usec-2000);
+        gpioSleep(PI_TIME_RELATIVE, 0, remaining_time.tv_usec);
     }
 
     // Update the timer
@@ -111,14 +109,19 @@ void update() {
 void *update_channels() {
 
     while(!drone_state.ARMED && connected) {
-        sleep(1);
+
+        printf("%d\n", connected);
         while (drone_state.ARMED) {
             ppm_factory.widths[0] = drone_state.ROLL;
             ppm_factory.widths[1] = drone_state.PITCH;
             ppm_factory.widths[2] = drone_state.YAW;
             ppm_factory.widths[3] = drone_state.THROTTLE;
             ppm_factory.widths[4] = drone_state.AUX1;
+            ppm_factory.widths[5] = drone_state.AUX2;
+            ppm_factory.widths[6] = drone_state.AUX3;
+            ppm_factory.widths[7] = drone_state.AUX4;
 
+            //TODO: UNDERSTAND WHY adding channels destroys ppmer
             update();
         }
     }
