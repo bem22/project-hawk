@@ -11,9 +11,9 @@ class NetworkManager {
 
     private ArrayBlockingQueue<String> messages = new ArrayBlockingQueue<String>(1500);
 
-    NetworkManager() {
-        tcpClient = new TCPClient(messages);
-        udpClient = new UDPClient();
+    NetworkManager(String ip) {
+        tcpClient = new TCPClient(messages, ip);
+        udpClient = new UDPClient(ip);
         tcpClient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         udpClient.sendPackets();
     }
@@ -27,6 +27,7 @@ class NetworkManager {
 
     void closeConnections() {
         udpClient.getSenderHandle().cancel(true);
+        udpClient.closeSocket();
         tcpClient.disconnect();
     }
 }

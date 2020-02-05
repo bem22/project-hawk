@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="flightModes">
+        <item>ACROBATICS</item>
+        <item>LEVEL</item>
+        <item>HEADLESS</item>
+        <item>HORIZON</item>
+    </array>
+
+</resources>

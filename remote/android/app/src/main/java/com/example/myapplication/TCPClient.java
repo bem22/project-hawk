@@ -13,8 +13,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class TCPClient extends AsyncTask<String, String, Void> {
     private boolean connected = true;
     private ArrayBlockingQueue<String> messages;
-    TCPClient(ArrayBlockingQueue<String> messages) {
+    private String SERVER_IP = "192.168.0.20";
+    TCPClient(ArrayBlockingQueue<String> messages, String ipAddress) {
         this.messages = messages;
+        this.SERVER_IP = ipAddress;
     }
 
     @Override
@@ -22,8 +24,7 @@ public class TCPClient extends AsyncTask<String, String, Void> {
         Thread.currentThread().setName("TCP Client");
         try {
             //here you must put your computer's IP address.
-            //server IP address
-            String SERVER_IP = "192.168.0.20";
+
             InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
 
             Log.d("TCP Client", "C: Connecting...");

@@ -18,11 +18,20 @@ import static java.lang.Thread.sleep;
 
 
 public class UDPClient {
+
+
     private DatagramSocket udpSocket;
     private InetAddress serverAddr;
     private String packet = "";
     private ScheduledFuture senderHandle;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private String ipAddress;
+
+
+    UDPClient(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
 
     private final Runnable sender = new Runnable() {
         public void run() {
@@ -38,7 +47,7 @@ public class UDPClient {
     void sendPackets() {
         try {
             udpSocket = new DatagramSocket(6000);
-            serverAddr = InetAddress.getByName("192.168.0.20");
+            serverAddr = InetAddress.getByName(ipAddress);
         } catch (SocketException | UnknownHostException e) {
             e.printStackTrace();
         }
@@ -50,7 +59,11 @@ public class UDPClient {
         this.packet = s;
     }
 
-    public ScheduledFuture getSenderHandle() {
+    void closeSocket() {
+        udpSocket.close();
+    }
+
+    ScheduledFuture getSenderHandle() {
         return senderHandle;
     }
 }

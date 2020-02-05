@@ -42,23 +42,6 @@
 
         </RelativeLayout>
     </LinearLayout>
-<!--    <RelativeLayout
-        android:id="@+id/mask"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:background="#010101"
-        android:alpha="0.8"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-
-            android:text=""
-            android:textColor="@color/platinum"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_width="wrap_content" />
-    </RelativeLayout>
     <Button
         android:id="@+id/connectButton"
         android:layout_width="120dp"
@@ -66,7 +49,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20sp"
-        android:text=""
+        android:text="Connect"
         android:textColor="#41FFB0"
-        android:background="#026440"/>-->
+        android:background="#026440"/>
 </RelativeLayout>

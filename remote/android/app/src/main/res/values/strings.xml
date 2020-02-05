@@ -4,6 +4,7 @@
     <string name="length">LENGTH: </string>
     <string name="chunk">CHUNK: </string>
     <string name="title_activity_menu">MenuActivity</string>
-    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_splash">Project Hawk</string>
     <string name="todo">TODO</string>
+    <string name="flight_mode_selector_dialog">Flight Mode</string>
 </resources>

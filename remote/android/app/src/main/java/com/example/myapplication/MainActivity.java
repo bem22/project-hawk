@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -22,9 +25,11 @@ import utils.ViewUtils;
 
 public class MainActivity extends Activity {
 
-    private SharedPreferences mPreferences;
+    private SharedPreferences sharedPreferences;
     private int mCount = 1;
-    private String sharedPrefFile = "com.example.android.hellosharedprefs";
+    private String ipAddress = " ";
+    private String flightMode = " ";
+    private String sharedPrefFile = "com.example.myapplication.hellosharedprefs";
     CircleView circleLeft;
     CircleView circleRight;
 
@@ -32,6 +37,7 @@ public class MainActivity extends Activity {
 
     RemoteState state = new RemoteState();
     PadUtils gamepad = new PadUtils();
+    private Button mButton;
 
     ArrayList<Float> axes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
 
@@ -42,8 +48,24 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         super.onCreate(savedInstanceState);
-        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+
+        SharedPreferences.OnSharedPreferenceChangeListener listener;
+
+        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if(key.equals("count")) {
+                    Log.d("hello","wprdl");
+                }
+            }
+        };
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+
 
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -51,7 +73,17 @@ public class MainActivity extends Activity {
         circleRight = findViewById(R.id.circle_right);
         rightSlate = findViewById(R.id.rightSlate);
 
-        net = new NetworkManager();
+        mButton = findViewById(R.id.connectButton);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if(net != null) {
+                    net.closeConnections();
+                }
+                net = new NetworkManager(ipAddress);
+            }
+        });
     }
 
     @Override
@@ -81,7 +113,7 @@ public class MainActivity extends Activity {
             DynamicToast.makeWarning(this, "You pressed some button").show();
             if(keyCode == KeyEvent.KEYCODE_BUTTON_START) {
                 Log.d("Hello", "menu");
-                DynamicToast.makeWarning(this, "You pressed menu").show();
+                DynamicToast.makeWarning(this, "Welcome to the menu").show();
                 Intent menuIntent= new Intent(this, MenuActivity.class);
                 startActivityForResult(menuIntent, 1);
             }
@@ -97,10 +129,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == 2) {
-            SharedPreferences sharedPreferences = getSharedPreferences("MyData", MODE_PRIVATE);
+            sharedPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
             mCount = sharedPreferences.getInt("count", 155);
-
-            Toast.makeText(this, "" + mCount, Toast.LENGTH_SHORT).show();
+            ipAddress = sharedPreferences.getString("ipAddress", "");
+            //flightMode = sharedPreferences.getString("flightMode", "");
+            DynamicToast.makeSuccess(this, "Settings saved successfully! " + ipAddress).show();
         }
     }
 

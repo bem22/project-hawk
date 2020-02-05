@@ -6,6 +6,8 @@ import android.os.Bundle;
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
 
 import android.util.Log;
 import android.view.InputDevice;
@@ -16,6 +18,11 @@ import static java.lang.Thread.sleep;
 
 public class MenuActivity extends AppCompatActivity {
     private int mCount = 0;
+
+
+    private String sharedPrefFile = "com.example.myapplication.hellosharedprefs";
+    private SharedPreferences sharedPreferences;
+    SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +38,10 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        SharedPreferences sharedPref = getSharedPreferences("MyData", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        sharedPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt("count", mCount);
         editor.apply();
-
-        Toast.makeText(this, "Your details has been save", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -48,14 +53,13 @@ public class MenuActivity extends AppCompatActivity {
 
             DynamicToast.makeWarning(this, "You pressed some button");
             if(keyCode == KeyEvent.KEYCODE_BUTTON_START) {
-                DynamicToast.makeSuccess(this, "You pressed menu", 10).show();
+                DynamicToast.makeSuccess(this, "Back to controller. Settings not saved", 10).show();
                 finish();
             }
 
             if(keyCode == KeyEvent.KEYCODE_BACK) {
                 setResult(2, null);
                 finish();
-                DynamicToast.makeSuccess(this, "Bye!", 500).show();
             }
 
             if(keyCode == KeyEvent.KEYCODE_BUTTON_A) {
@@ -68,5 +72,4 @@ public class MenuActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
 }
