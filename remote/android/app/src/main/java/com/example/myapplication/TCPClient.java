@@ -23,7 +23,7 @@ public class TCPClient extends AsyncTask<String, String, Void> {
         try {
             //here you must put your computer's IP address.
             //server IP address
-            String SERVER_IP = "10.42.0.104";
+            String SERVER_IP = "192.168.0.20";
             InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
 
             Log.d("TCP Client", "C: Connecting...");

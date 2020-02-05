@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.InputDevice;
@@ -9,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
@@ -20,7 +22,9 @@ import utils.ViewUtils;
 
 public class MainActivity extends Activity {
 
-
+    private SharedPreferences mPreferences;
+    private int mCount = 1;
+    private String sharedPrefFile = "com.example.android.hellosharedprefs";
     CircleView circleLeft;
     CircleView circleRight;
 
@@ -39,6 +43,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
+
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         circleLeft = findViewById(R.id.circle_left);
@@ -48,10 +54,15 @@ public class MainActivity extends Activity {
         net = new NetworkManager();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
 
     @Override
     protected void onDestroy() {
-        net.closeConnections();
+        //net.closeConnections();
         super.onDestroy();
     }
 
@@ -86,7 +97,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == 2) {
-            this.finishAndRemoveTask();
+            SharedPreferences sharedPreferences = getSharedPreferences("MyData", MODE_PRIVATE);
+            mCount = sharedPreferences.getInt("count", 155);
+
+            Toast.makeText(this, "" + mCount, Toast.LENGTH_SHORT).show();
         }
     }
 

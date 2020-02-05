@@ -38,7 +38,7 @@ public class UDPClient {
     void sendPackets() {
         try {
             udpSocket = new DatagramSocket(6000);
-            serverAddr = InetAddress.getByName("10.42.0.104");
+            serverAddr = InetAddress.getByName("192.168.0.20");
         } catch (SocketException | UnknownHostException e) {
             e.printStackTrace();
         }

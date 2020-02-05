@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
@@ -14,11 +15,28 @@ import android.widget.Toast;
 import static java.lang.Thread.sleep;
 
 public class MenuActivity extends AppCompatActivity {
+    private int mCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.preference_screen);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frame, new MenuFragment()).commit();
+
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        SharedPreferences sharedPref = getSharedPreferences("MyData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("count", mCount);
+        editor.apply();
+
+        Toast.makeText(this, "Your details has been save", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -42,6 +60,7 @@ public class MenuActivity extends AppCompatActivity {
 
             if(keyCode == KeyEvent.KEYCODE_BUTTON_A) {
                 Log.d("Hello", "A");
+                mCount = 100;
                 Toast toast = Toast.makeText(this, "A Pressed", Toast.LENGTH_SHORT);
                 toast.show();
             }
