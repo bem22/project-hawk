@@ -142,8 +142,8 @@ void *handle_udp_connection() {
     int n;
 
     struct timeval tv;
-    tv.tv_sec = 0;
-    tv.tv_usec = 100000;
+    tv.tv_sec = 4;
+    tv.tv_usec = 0;
     if (setsockopt(server_sock_udp, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
         perror("Error");
     }
@@ -161,7 +161,6 @@ void *handle_udp_connection() {
         packet = malloc(sizeof(struct packet));
 
         if(strncmp(buffer, "HAWK 1.0", 4) == 0) {
-            fflush(stdout);
             init_packet_fields(buffer, packet);
             read_udp_packet_params(packet, buffer);
             process_udp_packet(packet);
@@ -211,6 +210,7 @@ void start_server() {
 
             free(tcp_handler_thread);
             free(udp_handler_thread);
+
         }
     }
 }

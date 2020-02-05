@@ -30,17 +30,16 @@ bool action_land() {
 
 bool action_update_axes(packet *p) {
     if(state_is_armed()) {
-
         drone_state.THROTTLE = atoi(p->params[1]);
         drone_state.ROLL = atoi(p->params[3]);
         drone_state.PITCH = atoi(p->params[0]);
         drone_state.YAW = atoi(p->params[4]);
         drone_state.AUX1 = atoi(p->params[2]);
         drone_state.AUX2 = atoi(p->params[5]);
-        drone_state.AUX3 = atoi(p->params[6]);
-        drone_state.AUX4 = atoi(p->params[7]);
 
         fflush(stdout);
+        printf("%d %d %d %d %d %d\n", drone_state.THROTTLE, drone_state.ROLL, drone_state.PITCH, drone_state.AUX1, drone_state.YAW, drone_state.AUX2);
+
         return 1;
     } else return 0;
 }
