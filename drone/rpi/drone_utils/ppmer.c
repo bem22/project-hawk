@@ -116,10 +116,10 @@ void *update_channels() {
             ppm_factory.widths[1] = drone_state.PITCH;
             ppm_factory.widths[2] = drone_state.YAW;
             ppm_factory.widths[3] = drone_state.THROTTLE;
-            ppm_factory.widths[4] = drone_state.AUX1;
+/*            ppm_factory.widths[4] = drone_state.AUX1;
             ppm_factory.widths[5] = drone_state.AUX2;
             ppm_factory.widths[6] = drone_state.AUX3;
-            ppm_factory.widths[7] = drone_state.AUX4;
+            ppm_factory.widths[7] = drone_state.AUX4;*/
 
             //TODO: UNDERSTAND WHY adding channels destroys ppmer
             update();
