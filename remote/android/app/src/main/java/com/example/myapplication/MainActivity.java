@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -13,7 +11,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
+
+import androidx.preference.PreferenceManager;
 
 import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
@@ -23,13 +22,14 @@ import java.util.Arrays;
 import utils.PadUtils;
 import utils.ViewUtils;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity{
 
-    private SharedPreferences sharedPreferences;
-    private int mCount = 1;
+    private SharedPreferences.OnSharedPreferenceChangeListener preferencesListener;
     private String ipAddress = " ";
-    private String flightMode = " ";
-    private String sharedPrefFile = "com.example.myapplication.hellosharedprefs";
+
+    SharedPreferences prefs;
+
+
     CircleView circleLeft;
     CircleView circleRight;
 
@@ -37,66 +37,60 @@ public class MainActivity extends Activity {
 
     RemoteState state = new RemoteState();
     PadUtils gamepad = new PadUtils();
-    private Button mButton;
+    NetworkManager net;
 
+
+
+    // Move to viewUtils
     ArrayList<Float> axes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
-
     int[] locationsL = new int[2];
     int[] locationsR = new int[2];
 
-    NetworkManager net;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
         super.onCreate(savedInstanceState);
-        sharedPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
 
-        SharedPreferences.OnSharedPreferenceChangeListener listener;
+        prefs = PreferenceManager.getDefaultSharedPreferences (this);
 
-        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        net = new NetworkManager(prefs.getString("ipAddress",""));
+
+        preferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if(key.equals("count")) {
-                    Log.d("hello","wprdl");
+                if(key.equals("ipAddress")) {
+                    net.setIpAddress(sharedPreferences.getString(key, ""));
                 }
             }
+
         };
 
-        sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+
+        net.setIpAddress(prefs.getString("ipAddress", ""));
 
 
         setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         circleLeft = findViewById(R.id.circle_left);
         circleRight = findViewById(R.id.circle_right);
         rightSlate = findViewById(R.id.rightSlate);
 
-        mButton = findViewById(R.id.connectButton);
+        Button mButton = findViewById(R.id.connectButton);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                if(net != null) {
+                if(!state.isConnected()) {
+                    state.setConnected(true);
+                    net.startConnection();
+                } else {
                     net.closeConnections();
+                    net.startConnection();
                 }
-                net = new NetworkManager(ipAddress);
             }
         });
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        //net.closeConnections();
-        super.onDestroy();
-    }
 
     @Override
     public void onWindowFocusChanged (boolean hasFocus) {
@@ -112,7 +106,6 @@ public class MainActivity extends Activity {
 
             DynamicToast.makeWarning(this, "You pressed some button").show();
             if(keyCode == KeyEvent.KEYCODE_BUTTON_START) {
-                Log.d("Hello", "menu");
                 DynamicToast.makeWarning(this, "Welcome to the menu").show();
                 Intent menuIntent= new Intent(this, MenuActivity.class);
                 startActivityForResult(menuIntent, 1);
@@ -129,11 +122,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == 2) {
-            sharedPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-            mCount = sharedPreferences.getInt("count", 155);
-            ipAddress = sharedPreferences.getString("ipAddress", "");
-            //flightMode = sharedPreferences.getString("flightMode", "");
-            DynamicToast.makeSuccess(this, "Settings saved successfully! " + ipAddress).show();
+
+            DynamicToast.makeSuccess(this, "Settings saved successfully!" + prefs.getString("ipAddress", " ")).show();
         }
     }
 
@@ -229,7 +219,13 @@ public class MainActivity extends Activity {
 
         String packet = gamepad.getAxesPacket(state, axes);
 
-        net.setUDPPacket(packet);
-
+        net.setUDPPayload(packet);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        prefs.registerOnSharedPreferenceChangeListener(preferencesListener);
+    }
+
 }

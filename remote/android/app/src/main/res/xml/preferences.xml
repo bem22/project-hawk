@@ -1,5 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Networking">
+        <EditTextPreference
+            android:key="ipAddress"
+            android:defaultValue="192.168.0.1"
+            android:title="IP Address"
+            android:summary="IPv4/IPv6 for the drone"
+            android:dialogTitle="Hello there"
+            android:dialogMessage="Please input your IP here including ."
+            android:inputType="text"
+            android:singleLine="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Telemetry">
+        <SwitchPreferenceCompat
+            android:key="telemetry"
+            android:title="Telemetry"
+            android:summary="Enable/disable telemetry"/>
+        <SwitchPreferenceCompat
+            android:key="batteryIndicator"
+            android:title="Battery indicator"
+            android:summary="Enable/disable battery indicator"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Sensors">
+        <SwitchPreferenceCompat
+            android:key="barometer"
+            android:title="Barometer"
+            android:summary="Enable/disable barometer"/>
+
+        <SwitchPreferenceCompat
+            android:key="trimming"
+            android:title="Trimming"
+            android:summary="Enable/disable barometer"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Controller">
+        <ListPreference
+            android:key="flightMode"
+            android:title="Flight Mode"
+            android:entryValues="@array/flightModes"
+            android:entries="@array/flightModes"
+            android:defaultValue="HORIZON"/>
+    </PreferenceCategory>
 
 </PreferenceScreen>

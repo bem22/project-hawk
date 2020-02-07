@@ -40,7 +40,6 @@ public class MenuActivity extends AppCompatActivity {
         super.onPause();
         sharedPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("count", mCount);
         editor.apply();
     }
 
@@ -49,7 +48,6 @@ public class MenuActivity extends AppCompatActivity {
 
         if ((event.getSource() & InputDevice.SOURCE_GAMEPAD)
                 == InputDevice.SOURCE_GAMEPAD   ) {
-            //net.addTCPPacket(PadUtils.getPacket(state, keyCode));
 
             DynamicToast.makeWarning(this, "You pressed some button");
             if(keyCode == KeyEvent.KEYCODE_BUTTON_START) {
@@ -62,13 +60,6 @@ public class MenuActivity extends AppCompatActivity {
                 finish();
             }
 
-            if(keyCode == KeyEvent.KEYCODE_BUTTON_A) {
-                Log.d("Hello", "A");
-                mCount = 100;
-                Toast toast = Toast.makeText(this, "A Pressed", Toast.LENGTH_SHORT);
-                toast.show();
-            }
-            return true;
         }
         return super.onKeyDown(keyCode, event);
     }
