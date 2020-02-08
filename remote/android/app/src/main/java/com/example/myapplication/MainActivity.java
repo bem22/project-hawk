@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
@@ -25,11 +26,10 @@ import utils.ViewUtils;
 public class MainActivity extends Activity{
 
     private SharedPreferences.OnSharedPreferenceChangeListener preferencesListener;
-    private String ipAddress = " ";
 
     SharedPreferences prefs;
 
-
+    //TODO: Move to ViewUtils
     CircleView circleLeft;
     CircleView circleRight;
 
@@ -37,61 +37,70 @@ public class MainActivity extends Activity{
 
     RemoteState state = new RemoteState();
     PadUtils gamepad = new PadUtils();
+    ViewUtils views;
     NetworkManager net;
 
-
-
-    // Move to viewUtils
+    // TODO: Move to PadUtils
     ArrayList<Float> axes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
+
+    // TODO: Refactor locationsL/R and move to View utils
     int[] locationsL = new int[2];
     int[] locationsR = new int[2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         prefs = PreferenceManager.getDefaultSharedPreferences (this);
 
+        // Invoke Network Manager with ipAddress from preferences
         net = new NetworkManager(prefs.getString("ipAddress",""));
 
+        // Set up the preference listener
         preferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 if(key.equals("ipAddress")) {
                     net.setIpAddress(sharedPreferences.getString(key, ""));
+                    state.setTrimmer(sharedPreferences.getBoolean("trimmer", true));
                 }
             }
 
         };
 
-
-        net.setIpAddress(prefs.getString("ipAddress", ""));
-
-
         setContentView(R.layout.activity_main);
+
+        views = new ViewUtils(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         circleLeft = findViewById(R.id.circle_left);
         circleRight = findViewById(R.id.circle_right);
         rightSlate = findViewById(R.id.rightSlate);
 
-        Button mButton = findViewById(R.id.connectButton);
-        mButton.setOnClickListener(new View.OnClickListener() {
+        Button connectButton = findViewById(R.id.connectButton);
+        connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                if(!state.isConnected()) {
-                    state.setConnected(true);
+                if(!state.getConnectionStatus()) {
+                    state.setConnectionStatus(true);
                     net.startConnection();
                 } else {
                     net.closeConnections();
                     net.startConnection();
+                    //TODO: Return from network and set visibility state
+                    //TODO: When network fails, show button again
                 }
             }
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        prefs.registerOnSharedPreferenceChangeListener(preferencesListener);
+    }
 
+    // TODO: What is this?
     @Override
     public void onWindowFocusChanged (boolean hasFocus) {
         circleLeft.getLocationInWindow(locationsL);
@@ -100,7 +109,6 @@ public class MainActivity extends Activity{
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-
         if ((event.getSource() & InputDevice.SOURCE_GAMEPAD)
                 == InputDevice.SOURCE_GAMEPAD && event.getRepeatCount() == 0) {
 
@@ -116,9 +124,12 @@ public class MainActivity extends Activity{
             }
             return true;
         }
+
         return super.onKeyDown(keyCode, event);
     }
 
+
+    // TODO: This is no longer needed
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == 2) {
@@ -152,29 +163,10 @@ public class MainActivity extends Activity{
         return super.onGenericMotionEvent(event);
     }
 
-    private static Float getCenteredAxis(MotionEvent event,
-                                         InputDevice device, int axis, int historyPos) {
-        final InputDevice.MotionRange range =
-                device.getMotionRange(axis, event.getSource());
+    // Move to padUtils?
 
-        // A joystick at rest does not always report an absolute position of
-        // (0,0). Use the getFlat() method to determine the range of values
-        // bounding the joystick axis center.
-        if (range != null) {
-            final float flat = range.getFlat();
-            final float value =
-                    historyPos < 0 ? event.getAxisValue(axis):
-                            event.getHistoricalAxisValue(axis, historyPos);
 
-            // Ignore axis values that are within the 'flat' region of the
-            // joystick axis center.
-            if (Math.abs(value) > flat) {
-                return value;
-            }
-        }
-        return 0.0F;
-    }
-
+    // TODO: Move to padUtils and add callback for NetworkManager/ViewUtils/
     private void processJoystickInput(MotionEvent event,
                                       int historyPos) {
         InputDevice inputDevice = event.getDevice();
@@ -182,31 +174,44 @@ public class MainActivity extends Activity{
         // Calculate the horizontal distance to move by
         // using the input value from one of these physical controls:
         // the left control stick, hat axis, or the right control stick.
-        axes.set(0, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, historyPos));
-        if (axes.get(0) == 0) {
-            axes.set(0, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historyPos));
-        }
-
-        // Calculate the vertical distance to move by
-        // using the input value from one of these physical controls:
-        // the left control stick, hat switch, or the right control stick.
-        axes.set(1, -getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
-        if (axes.get(1) == 0) {
-            axes.set(1, -getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos));
-        }
-
-        axes.set(2, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
-        if (axes.get(2) == 0) {
-            axes.set(2, getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historyPos));
-        }
-
-        axes.set(3, -getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
-        if (axes.get(3) == 0) {
-            axes.set(3, -getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos));
-        }
-
+        axes.set(0, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, historyPos));
+        axes.set(1, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
+        axes.set(2, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
+        axes.set(3, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
         axes.set(4, event.getAxisValue(MotionEvent.AXIS_GAS));
         axes.set(5, event.getAxisValue(MotionEvent.AXIS_BRAKE));
+
+        Float gainControllValue = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historyPos);
+        if(gainControllValue != 0) {
+            if(gainControllValue > 0) {
+                state.increaseGain();
+
+            } else if(gainControllValue < 0) {
+                state.decreaseGain();
+            }
+
+            DynamicToast.makeWarning(this, " " + state.getGain()).show();
+        }
+
+        // For some reason DPAD DOWN and DPAD up are inverted (DPAD DOWN = 1, DPAD UP = -1)
+        Float throttleControllValue = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos);
+        if(throttleControllValue != 0) {
+            if(throttleControllValue > 0) {
+                state.decreaseThrottle();
+
+            } else if(throttleControllValue < 0) {
+                state.increaseThrottle();
+            }
+
+            DynamicToast.makeSuccess(this, " " + state.getThrottle()).show();
+        }
+
+        axes.set(1, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos));
+
+        axes.set(2, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historyPos));
+
+        axes.set(3, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos));
+
 
         ViewUtils.setViewColor(rightSlate, (int) (0xFF * axes.get(4)), 0x9F , 0x0, 0x0);
 
@@ -217,15 +222,11 @@ public class MainActivity extends Activity{
         circleRight.setX((float)locationsR[0]/3 + axes.get(2) * 500);
         circleRight.setY(locationsR[1] - axes.get(3) * 500);
 
+        //TODO: Add ControllerMode function here
+
         String packet = gamepad.getAxesPacket(state, axes);
 
         net.setUDPPayload(packet);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        prefs.registerOnSharedPreferenceChangeListener(preferencesListener);
     }
 
 }

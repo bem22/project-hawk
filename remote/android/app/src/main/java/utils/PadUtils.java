@@ -1,19 +1,26 @@
 package utils;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 
+import com.example.myapplication.MenuActivity;
 import com.example.myapplication.Packetizer;
 import com.example.myapplication.RemoteState;
+import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PadUtils {
+    //TODO: Remove packetizer from here and call in networkManager, generating a callback from this call
     private static Packetizer packetizer = new Packetizer();
+
     private ArrayList<String> axes_string = new ArrayList<>(Arrays.asList("", "", "", "", "", ""));
 
+    //TODO: Use this call to see if there's a controller connected.
     public static ArrayList<Integer> getGameControllerIds() {
         ArrayList<Integer> gameControllerDeviceIds = new ArrayList<Integer>();
         int[] deviceIds = InputDevice.getDeviceIds();
@@ -34,6 +41,7 @@ public class PadUtils {
         return gameControllerDeviceIds;
     }
 
+    //TODO: Refactor the function to reflect a better name
     public static String getPacket(RemoteState s, int keyCode) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BUTTON_A:
@@ -59,11 +67,6 @@ public class PadUtils {
             default:
                 return "EMPTY";
         }
-
-    }
-
-    public static String getPacket(RemoteState s, int keyCode, ArrayList args) {
-        return "";
     }
 
     /**
@@ -84,6 +87,29 @@ public class PadUtils {
         }
 
         else return "";
+    }
+
+    public static Float getCenteredAxis(MotionEvent event,
+                                         InputDevice device, int axis, int historyPos) {
+        final InputDevice.MotionRange range =
+                device.getMotionRange(axis, event.getSource());
+
+        // A joystick at rest does not always report an absolute position of
+        // (0,0). Use the getFlat() method to determine the range of values
+        // bounding the joystick axis center.
+        if (range != null) {
+            final float flat = range.getFlat();
+            final float value =
+                    historyPos < 0 ? event.getAxisValue(axis):
+                            event.getHistoricalAxisValue(axis, historyPos);
+
+            // Ignore axis values that are within the 'flat' region of the
+            // joystick axis center.
+            if (Math.abs(value) > flat) {
+                return value;
+            }
+        }
+        return 0.0F;
     }
 
 }
