@@ -11,6 +11,9 @@ public class RemoteState {
         this.minThrottle = 1000;
         this.maxThrottle = 2000;
     }
+
+    private boolean connectionStatus = false;
+
     private int gainCurve;
 
     private int gain;
@@ -28,8 +31,6 @@ public class RemoteState {
     private boolean trimmer;
 
     private boolean flightStatus;
-
-    private boolean connectionStatus;
 
     private int throttleTrimmerAdvancedLevel;
 
@@ -186,13 +187,6 @@ public class RemoteState {
         } else return trimmingLevel;
     }
 
-    public boolean getConnectionStatus() {
-        return connectionStatus;
-    }
-
-    void setConnectionStatus(boolean connected) {
-        this.connectionStatus = connected;
-    }
 
     public int getGainCurve() {
         return gainCurve;
@@ -276,6 +270,14 @@ public class RemoteState {
 
     public void setMaxThrottle(int maxThrottle) {
         this.maxThrottle = maxThrottle;
+    }
+
+    public boolean getConnectionStatus() {
+        return connectionStatus;
+    }
+
+    public void setConnectionState(boolean connected) {
+        connectionStatus = connected;
     }
 
 }

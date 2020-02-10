@@ -1,4 +1,4 @@
-package utils;
+package com.example.myapplication;
 
 import android.content.Intent;
 import android.util.Log;
@@ -15,6 +15,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PadUtils {
+
+    /** This variable holds the updated values from all 6 axes on the sticks/shoulders
+     * axes[0]
+     * axes[1]
+     * axes[2]
+     * axes[3]
+     * axes[4]
+     * axes[5]
+     */
+    private ArrayList<Float> axes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
+
+    public ArrayList<Float> getAxes() {
+        return axes;
+    }
+
     //TODO: Remove packetizer from here and call in networkManager, generating a callback from this call
     private static Packetizer packetizer = new Packetizer();
 

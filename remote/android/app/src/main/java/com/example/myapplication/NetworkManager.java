@@ -7,20 +7,23 @@ import java.util.concurrent.ArrayBlockingQueue;
 class NetworkManager {
     private TCPClient tcpClient;
     private UDPClient udpClient;
-    private String ipAddress = "127.0.0.1"; // This address will lead to nowhere
-
+    private String ipAddress;
+    private ViewUtils views;
+    private RemoteState state;
     private ArrayBlockingQueue<String> messages = new ArrayBlockingQueue<String>(1500);
 
-    NetworkManager(String ipAddress) {
+
+    NetworkManager(String ipAddress, ViewUtils views, RemoteState state) {
         this.ipAddress = ipAddress;
-        tcpClient = new TCPClient(messages, this.ipAddress);
+        this.views = views;
+        this.state = state;
         udpClient = new UDPClient(this.ipAddress);
     }
 
-    boolean startConnection() {
-        tcpClient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    void startConnection() {
         udpClient.sendPackets();
-        return true;
+        tcpClient = new TCPClient(messages, ipAddress, views, state);
+        tcpClient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     void addTCPPacket(String s) {
@@ -34,10 +37,12 @@ class NetworkManager {
     void closeConnections() {
         udpClient.getSenderHandle().cancel(true);
         udpClient.closeSocket();
-        tcpClient.disconnect();
+        tcpClient.cancel(true);
     }
 
     void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
+
+
 }
