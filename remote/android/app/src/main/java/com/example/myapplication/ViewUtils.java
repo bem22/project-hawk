@@ -14,7 +14,6 @@ public class ViewUtils {
     }
     public int defaultStickPositionLeftX = 529;
     public int defaultStickPositionLeftY = 513;
-    public int defaultStickPositionRightX = 1638;
     public int defaultStickPositionRightY = 513;
 
     public static void setViewColor(View view, int opacity, int red, int green, int blue) {

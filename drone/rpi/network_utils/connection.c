@@ -3,6 +3,7 @@
 #include "hawk-actions.h"
 #include "../drone_utils/ppmer.h"
 #include "../drone_utils/state.h"
+#include "zconf.h"
 #include <pthread.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -165,7 +166,6 @@ void *handle_udp_connection() {
             read_udp_packet_params(packet, buffer);
             process_udp_packet(packet);
         }
-
         free(packet);
     }
 

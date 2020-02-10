@@ -28,6 +28,17 @@ public class RemoteState {
     // This will store 8 values ranging from 1000 to 2000
     private ArrayList<Integer> axses = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
 
+    /** This array holds the updated raw values  from all six axes from the sticks/shoulders
+     * rawAxes[0] = left stick
+     */
+    private ArrayList<Float> rawAxes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
+
+    public ArrayList<Float> getRawAxes() {
+        return rawAxes;
+    }
+
+
+
     private boolean connectionStatus = false;
 
     private int gainCurve;

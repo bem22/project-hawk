@@ -131,12 +131,12 @@ public class MainActivity extends Activity{
         // Calculate the horizontal distance to move by
         // using the input value from one of these physical controls:
         // the left control stick, hat axis, or the right control stick.
-        gamepad.getAxes().set(0, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, historyPos));
-        gamepad.getAxes().set(1, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
-        gamepad.getAxes().set(2, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
-        gamepad.getAxes().set(3, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
-        gamepad.getAxes().set(4, event.getAxisValue(MotionEvent.AXIS_GAS));
-        gamepad.getAxes().set(5, event.getAxisValue(MotionEvent.AXIS_BRAKE));
+
+        gamepad.getAxes().set(0, event.getAxisValue(MotionEvent.AXIS_GAS));
+        gamepad.getAxes().set(1, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, historyPos));
+        gamepad.getAxes().set(2, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
+        gamepad.getAxes().set(3, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
+        gamepad.getAxes().set(4, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
 
         Float gainControlValue = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historyPos);
         if(gainControlValue != 0) {

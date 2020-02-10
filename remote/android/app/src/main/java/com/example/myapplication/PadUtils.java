@@ -91,12 +91,18 @@ public class PadUtils {
      */
     public String getAxesPacket(RemoteState state, ArrayList<Float> args) {
         if(!state.isArmed()) {
-            axes_string.set(0, "" + (int)(1500 + (500 * args.get(0))));
+
+            axes_string.set(0, "" + (int)(1000 * (1 + args.get(0))));
             axes_string.set(1, "" + (int)(1500 + (500 * args.get(1))));
             axes_string.set(2, "" + (int)(1500 + (500 * args.get(2))));
             axes_string.set(3, "" + (int)(1500 + (500 * args.get(3))));
-            axes_string.set(4, "" + (int)(1000 * (1 + args.get(4))));
-            axes_string.set(5, "" + (int)(1000 * (1 + args.get(5))));
+            axes_string.set(4, "" + (int)(1500 + (500 * args.get(4))));
+
+
+
+
+            axes_string.set(5, "1000");
+            //axes_string.set(5, "1000");
 
             return packetizer.packetize("STM ", axes_string);
         }
