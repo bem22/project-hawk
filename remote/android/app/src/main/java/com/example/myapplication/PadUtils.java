@@ -17,17 +17,17 @@ import java.util.Arrays;
 public class PadUtils {
 
     /** This variable holds the updated values from all 6 axes on the sticks/shoulders
-     * axes[0]
-     * axes[1]
-     * axes[2]
-     * axes[3]
-     * axes[4]
-     * axes[5]
+     * axes[0] is THROTTLE
+     * axes[1] is ROLL
+     * axes[2] is PITCH
+     * axes[3] is YAW
+     * axes[4] is AUX1
+     * axes[5] is AUX2
      */
-    private ArrayList<Float> axes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
+    private ArrayList<Float> rawAxes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
 
     public ArrayList<Float> getAxes() {
-        return axes;
+        return rawAxes;
     }
 
     //TODO: Remove packetizer from here and call in networkManager, generating a callback from this call

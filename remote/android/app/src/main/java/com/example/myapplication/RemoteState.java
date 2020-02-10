@@ -1,5 +1,8 @@
 package com.example.myapplication;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class RemoteState {
 
     RemoteState() {
@@ -11,6 +14,19 @@ public class RemoteState {
         this.minThrottle = 1000;
         this.maxThrottle = 2000;
     }
+
+    /** This variable holds the updated values from all 6 axes on the sticks/shoulders
+     * axes[0] is THROTTLE
+     * axes[1] is ROLL
+     * axes[2] is PITCH
+     * axes[3] is YAW
+     * axes[4] is AUX1
+     * axes[5] is AUX2
+     * axes[6] is AUX3
+     * axes[7] is AUX4
+     */
+    // This will store 8 values ranging from 1000 to 2000
+    private ArrayList<Integer> axses = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
 
     private boolean connectionStatus = false;
 
@@ -278,6 +294,14 @@ public class RemoteState {
 
     public void setConnectionState(boolean connected) {
         connectionStatus = connected;
+    }
+
+    public ArrayList<Integer> getAxses() {
+        return axses;
+    }
+
+    public void setAxses(ArrayList<Integer> axses) {
+        this.axses = axses;
     }
 
 }
