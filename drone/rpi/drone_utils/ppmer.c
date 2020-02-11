@@ -118,9 +118,9 @@ void *update_channels() {
             ppm_factory.widths[3] = drone_state.ROLL;
             ppm_factory.widths[4] = drone_state.AUX1;
             ppm_factory.widths[5] = drone_state.AUX2;
-            //ppm_factory.widths[6] = drone_state.AUX3;
-            //ppm_factory.widths[7] = drone_state.AUX4;
-            printf("%d %d %d %d %d %d\n", ppm_factory.widths[0], ppm_factory.widths[1], ppm_factory.widths[2], ppm_factory.widths[3], ppm_factory.widths[4], ppm_factory.widths[5]);
+            ppm_factory.widths[6] = drone_state.AUX3;
+            ppm_factory.widths[7] = drone_state.AUX4;
+            printf("%d %d %d %d %d %d %d %d\n", ppm_factory.widths[0], ppm_factory.widths[1], ppm_factory.widths[2], ppm_factory.widths[3], ppm_factory.widths[4], ppm_factory.widths[5], ppm_factory.widths[6], ppm_factory.widths[7]);
             update();
         }
     }
