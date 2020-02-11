@@ -1,9 +1,24 @@
 package com.example.myapplication;
 
+import android.view.KeyEvent;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class RemoteState {
+
+    private final short FLIGHT_MODE_ACRO = 1000;
+    private final short FLIGHT_MODE_ANGLE = 1500;
+    private final short FLIGHT_MODE_HORIZON = 2000;
+
+    private final short MAGNETOMETER_OFF = 1000;
+    private final short MAGNETOMETER_ON = 1500;
+
+    private final short BAROMETER_OFF = 1000;
+    private final short BAROMETER_ON = 1500;
+    private boolean leftThumbState;
+    private boolean rightThumbState;
 
     RemoteState() {
         this.gain = 100;
@@ -25,6 +40,7 @@ public class RemoteState {
      * axes[6] is AUX3
      * axes[7] is AUX4
      */
+
     // This will store 8 values ranging from 1000 to 2000
     private ArrayList<Integer> axes = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
 
@@ -35,11 +51,13 @@ public class RemoteState {
 
     ArrayList<String> axes_string = new ArrayList<>(Arrays.asList("", "", "", "", "", "", "", ""));
 
-    public ArrayList<Float> getRawAxes() {
+    ArrayList<Float> getRawAxes() {
         return rawAxes;
     }
 
-
+    private int flightMode = FLIGHT_MODE_ANGLE;
+    private int barometerStatus = BAROMETER_OFF;
+    private int magnetometerStatus= MAGNETOMETER_OFF;
 
     private boolean connectionStatus = false;
 
@@ -52,7 +70,6 @@ public class RemoteState {
     private int throttle;
     private int minThrottle;
     private int maxThrottle;
-
 
     private boolean armingStatus;
 
@@ -300,30 +317,91 @@ public class RemoteState {
         this.maxThrottle = maxThrottle;
     }
 
-    public boolean getConnectionStatus() {
+    boolean getConnectionStatus() {
         return connectionStatus;
     }
 
-    public void setConnectionState(boolean connected) {
+    void setConnectionState(boolean connected) {
         connectionStatus = connected;
     }
 
-    public ArrayList<Integer> getAxes() {
+    ArrayList<Integer> getAxes() {
         this.setAxes(this.rawAxes);
         return axes;
     }
 
-    public void setAxes(ArrayList<Float> rawAxes) {
+    void setFlightMode(String flightMode) {
+        switch(flightMode) {
+            case "ANGLE":
+                this.flightMode = FLIGHT_MODE_ANGLE;
+                break;
+            case "HORIZON":
+                this.flightMode = FLIGHT_MODE_HORIZON;
+                break;
+            case "ACRO":
+                this.flightMode = FLIGHT_MODE_ACRO;
+                break;
+            default:
+                break;
+        }
+    }
+
+    void setBarometerStatus(boolean barometerStatus) {
+        if(barometerStatus) {
+            this.barometerStatus = BAROMETER_ON;
+
+        } else {
+            this.barometerStatus = BAROMETER_OFF;
+        }
+    }
+
+    void setMagnetometerStatus(boolean magnetometerStatus) {
+        if(magnetometerStatus) {
+            this.magnetometerStatus = MAGNETOMETER_ON;
+        } else {
+            this.magnetometerStatus = MAGNETOMETER_OFF;
+        }
+    }
+
+    private void setAxes(ArrayList<Float> rawAxes) {
         this.axes.set(0, (int)(1000 * (1 + rawAxes.get(0))));
         this.axes.set(1, (int)(1500 + (500 * rawAxes.get(1))));
         this.axes.set(2, (int)(1500 + (500 * rawAxes.get(2))));
         this.axes.set(3, (int)(1500 + (500 * rawAxes.get(3))));
-        this.axes.set(4, (int)(1500 + (500 * rawAxes.get(4))));
 
-        this.axes.set(5, 1000);
-        this.axes.set(6, 1000);
+        this.axes.set(4, flightMode);
+        this.axes.set(5, barometerStatus);
+        this.axes.set(6, magnetometerStatus);
         this.axes.set(7, 1000);
-
     }
 
+    void setButtonState(int keyCode) {
+        if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBL) {
+            leftThumbState = true;
+        }
+
+        if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBR) {
+            rightThumbState = true;
+        }
+
+        useState();
+    }
+
+    void resetButtonState(int keyCode) {
+        if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBL) {
+            leftThumbState = false;
+        }
+
+        if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBR) {
+            rightThumbState = false;
+        }
+    }
+
+    private void useState() {
+        if(leftThumbState && rightThumbState) {
+            barometerStatus = BAROMETER_ON;
+        } else {
+            barometerStatus = BAROMETER_OFF;
+        }
+    }
 }

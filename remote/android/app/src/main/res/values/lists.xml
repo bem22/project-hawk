@@ -2,9 +2,8 @@
 <resources>
 
     <array name="flightModes">
-        <item>ACROBATICS</item>
-        <item>LEVEL</item>
-        <item>HEADLESS</item>
+        <item>ACRO</item>
+        <item>ANGLE</item>
         <item>HORIZON</item>
     </array>
 

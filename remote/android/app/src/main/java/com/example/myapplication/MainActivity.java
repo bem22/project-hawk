@@ -10,7 +10,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 
 import androidx.preference.PreferenceManager;
 
@@ -42,10 +41,26 @@ public class MainActivity extends Activity{
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 if(key.equals("ipAddress")) {
                     net.setIpAddress(sharedPreferences.getString(key, ""));
+                }
+
+                if(key.equals("trimmer")) {
                     state.setTrimmer(sharedPreferences.getBoolean("trimmer", true));
                 }
-            }
 
+                if(key.equals("flightMode")) {
+                    state.setFlightMode(sharedPreferences.getString("flightMode", "ANGLE"));
+                }
+
+                if(key.equals("barometer")) {
+                    state.setBarometerStatus((sharedPreferences.getBoolean("barometer", false)));
+                }
+
+                if(key.equals("magnetometer")) {
+                    state.setMagnetometerStatus((sharedPreferences.getBoolean("magnetometer", false)));
+                }
+
+                net.setUDPPayload();
+            }
         };
 
         setContentView(R.layout.activity_main);
@@ -65,8 +80,6 @@ public class MainActivity extends Activity{
                     net.startConnection();
                 } else {
                     net.closeConnections();
-                    //TODO: Return from network and set visibility state
-                    //TODO: When network fails, show button again
                 }
             }
         });
@@ -96,10 +109,13 @@ public class MainActivity extends Activity{
             if(keyCode == KeyEvent.KEYCODE_BUTTON_MODE) {
                 DynamicToast.makeSuccess(this, "Attempting to connect...").show();
                 views.connectButton.performClick();
-                //TODO Add connect functionality here
             }
 
-            Log.d(keyCode+ "" , "hello");
+            if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBR || keyCode == KeyEvent.KEYCODE_BUTTON_THUMBL) {
+                state.setButtonState(keyCode);
+            }
+
+            Log.d("hello", keyCode + "hello from keys");
             return true;
         }
 
@@ -107,8 +123,20 @@ public class MainActivity extends Activity{
     }
 
     @Override
-    public boolean onGenericMotionEvent(MotionEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
 
+        if ((event.getSource() & InputDevice.SOURCE_GAMEPAD)
+                == InputDevice.SOURCE_GAMEPAD && event.getRepeatCount() == 0) {
+            state.resetButtonState(keyCode);
+        }
+
+        return super.onKeyUp(keyCode, event);
+
+    }
+
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
         // Check that the event came from a game controller
         if ((event.getSource() & InputDevice.SOURCE_JOYSTICK) ==
                 InputDevice.SOURCE_JOYSTICK &&
@@ -131,7 +159,6 @@ public class MainActivity extends Activity{
         return super.onGenericMotionEvent(event);
     }
 
-    // TODO: Move to padUtils and add callback for NetworkManager/ViewUtils/
     private void processJoystickInput(MotionEvent event,
                                       int historyPos) {
         InputDevice inputDevice = event.getDevice();
@@ -169,16 +196,9 @@ public class MainActivity extends Activity{
             DynamicToast.makeSuccess(this, " " + state.getThrottle()).show();
         }
 
-
-
         views.updateAxesUI();
 
-
-        //TODO: Add ControllerMode function here
-
-        String packet = net.getAxesPacket(state);
-
-        net.setUDPPayload(packet);
+        net.setUDPPayload();
     }
 
 }

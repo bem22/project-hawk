@@ -13,9 +13,6 @@ import java.util.Objects;
 import static android.content.Context.MODE_PRIVATE;
 
 public class MenuFragment extends PreferenceFragmentCompat {
-    private String sharedPrefFile = "com.example.myapplication.hellosharedprefs";
-    private SharedPreferences sharedPreferences;
-
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey)  {

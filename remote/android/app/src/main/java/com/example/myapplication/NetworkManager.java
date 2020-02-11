@@ -32,8 +32,8 @@ class NetworkManager {
         messages.offer(getPacket(state, keyCode));
     }
 
-    void setUDPPayload(String s) {
-        udpClient.setPacketString(s);
+    void setUDPPayload() {
+        udpClient.setPacketString(getAxesPacket(state));
     }
 
     void closeConnections() {
@@ -53,21 +53,9 @@ class NetworkManager {
             case KeyEvent.KEYCODE_BUTTON_B:
                 return packetizer.packetize("DARM");
             case KeyEvent.KEYCODE_BUTTON_X:
-                //TODO: handle state - landing
-                //TODO: create args
                 return packetizer.packetize("LAND");
             case KeyEvent.KEYCODE_BUTTON_Y:
-                //TODO: handle state - telemetry
-                //TODO: create args
                 return packetizer.packetize("TELE");
-            case KeyEvent.KEYCODE_BACK:
-                //TODO: jump to new activity from main activity
-                Log.d("Hello", "world");
-                return "BACK";
-            case KeyEvent.KEYCODE_BUTTON_START:
-                //TODO: use this button in the new activity (state)
-                Log.d("Hello", "menu");
-                return "MENU";
             default:
                 return "EMPTY";
         }
@@ -83,7 +71,6 @@ class NetworkManager {
             state.axes_string.set(5, state.getAxes().get(5).toString());
             state.axes_string.set(6, state.getAxes().get(6).toString());
             state.axes_string.set(7, state.getAxes().get(7).toString());
-            Log.d(packetizer.packetize("STM ", state.axes_string), " ");
             return packetizer.packetize("STM ", state.axes_string);
         }
 

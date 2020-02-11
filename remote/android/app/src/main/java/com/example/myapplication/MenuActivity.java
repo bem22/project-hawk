@@ -17,12 +17,6 @@ import android.widget.Toast;
 import static java.lang.Thread.sleep;
 
 public class MenuActivity extends AppCompatActivity {
-    private int mCount = 0;
-
-
-    private String sharedPrefFile = "com.example.myapplication.hellosharedprefs";
-    private SharedPreferences sharedPreferences;
-    SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +26,6 @@ public class MenuActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frame, new MenuFragment()).commit();
-
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        sharedPreferences = getSharedPreferences(sharedPrefFile, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.apply();
     }
 
     @Override

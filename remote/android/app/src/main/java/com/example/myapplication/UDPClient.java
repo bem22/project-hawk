@@ -30,7 +30,7 @@ class UDPClient {
         public void run() {
             try {
                 byte[] buf = packetString.getBytes();
-                Log.d(packetString, " from UDPclient");
+                //Log.d(packetString, " from UDPclient");
                 DatagramPacket packet = new DatagramPacket(buf, buf.length,serverAddr, 5000);
                 udpSocket.send(packet);
 

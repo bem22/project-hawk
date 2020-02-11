@@ -52,7 +52,6 @@ public class Packetizer{
             sb.append(args.get(i)).append("\n");
         }
 
-        Log.d("\n", sb.toString());
         return sb.toString();
     }
 

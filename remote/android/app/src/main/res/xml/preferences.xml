@@ -30,12 +30,23 @@
         <SwitchPreferenceCompat
             android:key="barometer"
             android:title="Barometer"
-            android:summary="Enable/disable barometer"/>
+            android:summary="Enable/disable Magnetometer"
+            android:switchTextOn="BAROMETER_ON"
+            android:switchTextOff="BAROMETER_OFF"/>
+
+        <SwitchPreferenceCompat
+            android:key="magnetometer"
+            android:title="Magnetometer"
+            android:summary="Enable/disable Magnetometer"
+            android:switchTextOn="MAGNETOMETER_ON"
+            android:switchTextOff="MAGNETOMETER_OFF"/>
 
         <SwitchPreferenceCompat
             android:key="trimming"
             android:title="Trimming"
-            android:summary="Enable/disable barometer"/>
+            android:summary="Enable/disable barometer"
+            android:switchTextOn="TRIMMING_ON"
+            android:switchTextOff="TRIMMING_OFF"/>
 
     </PreferenceCategory>
 
@@ -45,7 +56,7 @@
             android:title="Flight Mode"
             android:entryValues="@array/flightModes"
             android:entries="@array/flightModes"
-            android:defaultValue="HORIZON"/>
+            android:defaultValue="ANGLE"/>
     </PreferenceCategory>
 
 </PreferenceScreen>
