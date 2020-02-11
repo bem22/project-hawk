@@ -122,12 +122,15 @@ void *handle_tcp_connection() {
 }
 
 int read_udp_packet_params(packet *p, char* buffer) {
+    // This will read the number of params tag "PARAMC"
     char param_count_string[3] = {0};
     strncpy(param_count_string, buffer + header_buffer_size + 6,  2);
 
+    // This will read the actual number and apply it to the packet
     int param_count = atoi(param_count_string);
     p->param_size = param_count;
 
+    // Skip the read chars
     buffer+=(header_buffer_size + 9);
 
     for(int i=0; i<param_count; i++) {

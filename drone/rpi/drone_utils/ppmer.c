@@ -27,6 +27,7 @@ int init(unsigned int gpio, int channels, int frame_ms) {
     for(int i=0; i<3; i++) {
         ppm_factory.waves[i] = malloc(6 * (channels + 1) * sizeof(gpioPulse_t));
     }
+
     // Set the pulse width of each channel to 1000
     for(int i=0; i<channels; i++) {
         ppm_factory.widths[i] = 1000;

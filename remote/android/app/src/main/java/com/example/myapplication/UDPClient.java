@@ -11,34 +11,29 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
-import static java.lang.Thread.sleep;
-
-
-public class UDPClient {
-
+class UDPClient {
 
     private DatagramSocket udpSocket;
     private InetAddress serverAddr;
-    private String packet = "";
+    private String packetString = "";
     private ScheduledFuture senderHandle;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private String ipAddress;
-
 
     UDPClient(String ipAddress) {
         this.ipAddress = ipAddress;
     }
 
-
     private final Runnable sender = new Runnable() {
         public void run() {
             try {
-                byte[] buf = packet.getBytes();
+                byte[] buf = packetString.getBytes();
+                Log.d(packetString, " from UDPclient");
                 DatagramPacket packet = new DatagramPacket(buf, buf.length,serverAddr, 5000);
                 udpSocket.send(packet);
+
             } catch (IOException e) {
                 Log.e("Udp Send:", "IO Error:", e);
             }
@@ -55,8 +50,8 @@ public class UDPClient {
                 scheduler.scheduleWithFixedDelay(sender, 0, 5, TimeUnit.MILLISECONDS);
     }
 
-    void setPacket(String s) {
-        this.packet = s;
+    void setPacketString(String s) {
+        this.packetString = s;
     }
 
     void closeSocket() {

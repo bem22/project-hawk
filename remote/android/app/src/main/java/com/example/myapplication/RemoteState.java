@@ -33,7 +33,7 @@ public class RemoteState {
      */
     private ArrayList<Float> rawAxes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
 
-    ArrayList<String> axes_string = new ArrayList<>(Arrays.asList("1000", "1000", "1000", "1000", "1000", "1000", "1000", "1000"));
+    ArrayList<String> axes_string = new ArrayList<>(Arrays.asList("", "", "", "", "", "", "", ""));
 
     public ArrayList<Float> getRawAxes() {
         return rawAxes;
@@ -308,12 +308,12 @@ public class RemoteState {
         connectionStatus = connected;
     }
 
-    public ArrayList<Integer> getAxses() {
-        this.setAxses(this.rawAxes);
+    public ArrayList<Integer> getAxes() {
+        this.setAxes(this.rawAxes);
         return axes;
     }
 
-    public void setAxses(ArrayList<Float> rawAxes) {
+    public void setAxes(ArrayList<Float> rawAxes) {
         this.axes.set(0, (int)(1000 * (1 + rawAxes.get(0))));
         this.axes.set(1, (int)(1500 + (500 * rawAxes.get(1))));
         this.axes.set(2, (int)(1500 + (500 * rawAxes.get(2))));

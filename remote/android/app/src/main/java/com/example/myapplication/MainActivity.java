@@ -95,6 +95,7 @@ public class MainActivity extends Activity{
 
             if(keyCode == KeyEvent.KEYCODE_BUTTON_MODE) {
                 DynamicToast.makeSuccess(this, "Attempting to connect...").show();
+                views.connectButton.performClick();
                 //TODO Add connect functionality here
             }
 

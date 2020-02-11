@@ -4,8 +4,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.KeyEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 
 class NetworkManager {
@@ -35,7 +33,7 @@ class NetworkManager {
     }
 
     void setUDPPayload(String s) {
-        udpClient.setPacket(s);
+        udpClient.setPacketString(s);
     }
 
     void closeConnections() {
@@ -77,16 +75,15 @@ class NetworkManager {
 
     String getAxesPacket(RemoteState state) {
         if(!state.isArmed()) {
-
-            state.axes_string.set(0, state.getAxses().get(0).toString());
-            state.axes_string.set(1, state.getAxses().get(1).toString());
-            state.axes_string.set(2, state.getAxses().get(2).toString());
-            state.axes_string.set(3, state.getAxses().get(3).toString());
-            state.axes_string.set(4, state.getAxses().get(4).toString());
-            state.axes_string.set(5, state.getAxses().get(5).toString());
-            state.axes_string.set(6, state.getAxses().get(6).toString());
-            state.axes_string.set(7, state.getAxses().get(7).toString());
-
+            state.axes_string.set(0, state.getAxes().get(0).toString());
+            state.axes_string.set(1, state.getAxes().get(1).toString());
+            state.axes_string.set(2, state.getAxes().get(2).toString());
+            state.axes_string.set(3, state.getAxes().get(3).toString());
+            state.axes_string.set(4, state.getAxes().get(4).toString());
+            state.axes_string.set(5, state.getAxes().get(5).toString());
+            state.axes_string.set(6, state.getAxes().get(6).toString());
+            state.axes_string.set(7, state.getAxes().get(7).toString());
+            Log.d(packetizer.packetize("STM ", state.axes_string), " ");
             return packetizer.packetize("STM ", state.axes_string);
         }
 

@@ -6,6 +6,10 @@ bool state_init() {
     drone_state.PITCH = 1500;
     drone_state.ROLL = 1500;
     drone_state.YAW = 1500;
+    drone_state.AUX1 = 1000;
+    drone_state.AUX2 = 1000;
+    drone_state.AUX3 = 1000;
+    drone_state.AUX4 = 1000;
 }
 
 bool state_check_parked() {
