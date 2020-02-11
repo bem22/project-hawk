@@ -1,7 +1,11 @@
 package com.example.myapplication;
 
 import android.os.AsyncTask;
+import android.util.Log;
+import android.view.KeyEvent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 
 class NetworkManager {
@@ -10,8 +14,8 @@ class NetworkManager {
     private String ipAddress;
     private ViewUtils views;
     private RemoteState state;
+    private static Packetizer packetizer = new Packetizer();
     private ArrayBlockingQueue<String> messages = new ArrayBlockingQueue<String>(1500);
-
 
     NetworkManager(String ipAddress, ViewUtils views, RemoteState state) {
         this.ipAddress = ipAddress;
@@ -26,8 +30,8 @@ class NetworkManager {
         tcpClient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    void addTCPPacket(String s) {
-        messages.offer(s);
+    void addTCPPacket(int keyCode) {
+        messages.offer(getPacket(state, keyCode));
     }
 
     void setUDPPayload(String s) {
@@ -44,5 +48,49 @@ class NetworkManager {
         this.ipAddress = ipAddress;
     }
 
+    String getPacket(RemoteState s, int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BUTTON_A:
+                return packetizer.packetize("ARM ");
+            case KeyEvent.KEYCODE_BUTTON_B:
+                return packetizer.packetize("DARM");
+            case KeyEvent.KEYCODE_BUTTON_X:
+                //TODO: handle state - landing
+                //TODO: create args
+                return packetizer.packetize("LAND");
+            case KeyEvent.KEYCODE_BUTTON_Y:
+                //TODO: handle state - telemetry
+                //TODO: create args
+                return packetizer.packetize("TELE");
+            case KeyEvent.KEYCODE_BACK:
+                //TODO: jump to new activity from main activity
+                Log.d("Hello", "world");
+                return "BACK";
+            case KeyEvent.KEYCODE_BUTTON_START:
+                //TODO: use this button in the new activity (state)
+                Log.d("Hello", "menu");
+                return "MENU";
+            default:
+                return "EMPTY";
+        }
+    }
+
+    String getAxesPacket(RemoteState state) {
+        if(!state.isArmed()) {
+
+            state.axes_string.set(0, state.getAxses().get(0).toString());
+            state.axes_string.set(1, state.getAxses().get(1).toString());
+            state.axes_string.set(2, state.getAxses().get(2).toString());
+            state.axes_string.set(3, state.getAxses().get(3).toString());
+            state.axes_string.set(4, state.getAxses().get(4).toString());
+            state.axes_string.set(5, state.getAxses().get(5).toString());
+            state.axes_string.set(6, state.getAxses().get(6).toString());
+            state.axes_string.set(7, state.getAxses().get(7).toString());
+
+            return packetizer.packetize("STM ", state.axes_string);
+        }
+
+        else return "";
+    }
 
 }

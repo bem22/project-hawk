@@ -30,9 +30,6 @@ public class PadUtils {
         return rawAxes;
     }
 
-    //TODO: Remove packetizer from here and call in networkManager, generating a callback from this call
-    private static Packetizer packetizer = new Packetizer();
-
     private ArrayList<String> axes_string = new ArrayList<>(Arrays.asList("", "", "", "", "", ""));
 
     //TODO: Use this call to see if there's a controller connected.
@@ -56,62 +53,9 @@ public class PadUtils {
         return gameControllerDeviceIds;
     }
 
-    //TODO: Refactor the function to reflect a better name
-    public static String getPacket(RemoteState s, int keyCode) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_BUTTON_A:
-                return packetizer.packetize("ARM ");
-            case KeyEvent.KEYCODE_BUTTON_B:
-                return packetizer.packetize("DARM");
-            case KeyEvent.KEYCODE_BUTTON_X:
-                //TODO: handle state - landing
-                //TODO: create args
-                return packetizer.packetize("LAND");
-            case KeyEvent.KEYCODE_BUTTON_Y:
-                //TODO: handle state - telemetry
-                //TODO: create args
-                return packetizer.packetize("TELE");
-            case KeyEvent.KEYCODE_BACK:
-                //TODO: jump to new activity from main activity
-                Log.d("Hello", "world");
-                return "BACK";
-            case KeyEvent.KEYCODE_BUTTON_START:
-                //TODO: use this button in the new activity (state)
-                Log.d("Hello", "menu");
-                return "MENU";
-            default:
-                return "EMPTY";
-        }
-    }
 
-    /**
-     * @param state the state of the remote
-     * @param args arguments of the packet (axes values)
-     * @return a string containing the the payload to be sent to the drone
-     */
-    public String getAxesPacket(RemoteState state, ArrayList<Float> args) {
-        if(!state.isArmed()) {
-
-            axes_string.set(0, "" + (int)(1000 * (1 + args.get(0))));
-            axes_string.set(1, "" + (int)(1500 + (500 * args.get(1))));
-            axes_string.set(2, "" + (int)(1500 + (500 * args.get(2))));
-            axes_string.set(3, "" + (int)(1500 + (500 * args.get(3))));
-            axes_string.set(4, "" + (int)(1500 + (500 * args.get(4))));
-
-
-
-
-            axes_string.set(5, "1000");
-            //axes_string.set(5, "1000");
-
-            return packetizer.packetize("STM ", axes_string);
-        }
-
-        else return "";
-    }
-
-    public static Float getCenteredAxis(MotionEvent event,
-                                         InputDevice device, int axis, int historyPos) {
+    static Float getCenteredAxis(MotionEvent event,
+                                 InputDevice device, int axis, int historyPos) {
         final InputDevice.MotionRange range =
                 device.getMotionRange(axis, event.getSource());
 

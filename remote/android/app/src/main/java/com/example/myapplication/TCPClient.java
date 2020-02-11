@@ -85,4 +85,5 @@ public class TCPClient extends AsyncTask<String, Boolean, Void> {
         views.showConnectionIcon(false);
         state.setConnectionState(false);
     }
+
 }

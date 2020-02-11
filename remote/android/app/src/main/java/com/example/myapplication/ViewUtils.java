@@ -1,29 +1,28 @@
 package com.example.myapplication;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.example.myapplication.CircleView;
-import com.example.myapplication.R;
-
 public class ViewUtils {
 
-    ViewUtils() {
+    ViewUtils(RemoteState state) {
+        this.state = state;
     }
-    public int defaultStickPositionLeftX = 529;
-    public int defaultStickPositionLeftY = 513;
-    public int defaultStickPositionRightY = 513;
+
+    private RemoteState state;
+
+    private int defaultStickPositionHorizontal = 529;
+    private int defaultStickPositionVertical = 513;
 
     public static void setViewColor(View view, int opacity, int red, int green, int blue) {
         view.setBackgroundColor(opacity*16*16*16*16*16*16 + red*16*16*16*16 + green*16*16 + blue);
     }
 
-    public CircleView stickPositionLeft;
-    public CircleView stickPositionRight;
+    CircleView stickPositionLeft;
+    CircleView stickPositionRight;
     Button connectButton;
-    public ImageView connectionIcon;
+    ImageView connectionIcon;
 
     public int[] stickPositionLeftXY= new int[2];
     public int[] stickPositionRightXY = new int[2];
@@ -34,5 +33,12 @@ public class ViewUtils {
         } else {
             connectionIcon.setBackgroundResource(R.drawable.no_signal_icon);
         }
+    }
+
+    void updateAxesUI() {
+        stickPositionLeft.setX(defaultStickPositionHorizontal+ state.getRawAxes().get(1) * 500);
+        stickPositionLeft.setY(defaultStickPositionVertical - state.getRawAxes().get(2) * 500);
+        stickPositionRight.setX(defaultStickPositionHorizontal  + state.getRawAxes().get(3) * 500);
+        stickPositionRight.setY(defaultStickPositionVertical - state.getRawAxes().get(4) * 500);
     }
 }

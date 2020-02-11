@@ -8,7 +8,7 @@ public class RemoteState {
     RemoteState() {
         this.gain = 100;
         this.minGain = 1;
-        this.maxGain = 10000;
+        this.maxGain = 1000;
 
         this.throttle = 1000;
         this.minThrottle = 1000;
@@ -26,12 +26,14 @@ public class RemoteState {
      * axes[7] is AUX4
      */
     // This will store 8 values ranging from 1000 to 2000
-    private ArrayList<Integer> axses = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
+    private ArrayList<Integer> axes = new ArrayList<>(Arrays.asList(0, 0, 0, 0, 0, 0, 0, 0));
 
     /** This array holds the updated raw values  from all six axes from the sticks/shoulders
      * rawAxes[0] = left stick
      */
     private ArrayList<Float> rawAxes = new ArrayList<>(Arrays.asList((float) 0, (float) 0, (float) 0, (float) 0, (float) 0, (float) 0));
+
+    ArrayList<String> axes_string = new ArrayList<>(Arrays.asList("1000", "1000", "1000", "1000", "1000", "1000", "1000", "1000"));
 
     public ArrayList<Float> getRawAxes() {
         return rawAxes;
@@ -46,7 +48,6 @@ public class RemoteState {
     private int gain;
     private int minGain;
     private int maxGain;
-
 
     private int throttle;
     private int minThrottle;
@@ -308,11 +309,21 @@ public class RemoteState {
     }
 
     public ArrayList<Integer> getAxses() {
-        return axses;
+        this.setAxses(this.rawAxes);
+        return axes;
     }
 
-    public void setAxses(ArrayList<Integer> axses) {
-        this.axses = axses;
+    public void setAxses(ArrayList<Float> rawAxes) {
+        this.axes.set(0, (int)(1000 * (1 + rawAxes.get(0))));
+        this.axes.set(1, (int)(1500 + (500 * rawAxes.get(1))));
+        this.axes.set(2, (int)(1500 + (500 * rawAxes.get(2))));
+        this.axes.set(3, (int)(1500 + (500 * rawAxes.get(3))));
+        this.axes.set(4, (int)(1500 + (500 * rawAxes.get(4))));
+
+        this.axes.set(5, 1000);
+        this.axes.set(6, 1000);
+        this.axes.set(7, 1000);
+
     }
 
 }

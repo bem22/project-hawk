@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -29,7 +30,7 @@ public class MainActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        views = new ViewUtils();
+        views = new ViewUtils(state);
         prefs = PreferenceManager.getDefaultSharedPreferences (this);
 
         // Invoke Network Manager with ipAddress from preferences
@@ -82,7 +83,6 @@ public class MainActivity extends Activity{
         if ((event.getSource() & InputDevice.SOURCE_GAMEPAD)
                 == InputDevice.SOURCE_GAMEPAD && event.getRepeatCount() == 0) {
 
-            DynamicToast.makeWarning(this, "You pressed some button").show();
             if(keyCode == KeyEvent.KEYCODE_BUTTON_START) {
                 DynamicToast.makeWarning(this, "Welcome to the menu").show();
                 Intent menuIntent= new Intent(this, MenuActivity.class);
@@ -90,8 +90,15 @@ public class MainActivity extends Activity{
             }
 
             if(keyCode == KeyEvent.KEYCODE_BUTTON_A || keyCode == KeyEvent.KEYCODE_BUTTON_B || keyCode == KeyEvent.KEYCODE_BUTTON_X || keyCode == KeyEvent.KEYCODE_BUTTON_Y) {
-                net.addTCPPacket(PadUtils.getPacket(state, keyCode));
+                net.addTCPPacket(keyCode);
             }
+
+            if(keyCode == KeyEvent.KEYCODE_BUTTON_MODE) {
+                DynamicToast.makeSuccess(this, "Attempting to connect...").show();
+                //TODO Add connect functionality here
+            }
+
+            Log.d(keyCode+ "" , "hello");
             return true;
         }
 
@@ -132,11 +139,11 @@ public class MainActivity extends Activity{
         // using the input value from one of these physical controls:
         // the left control stick, hat axis, or the right control stick.
 
-        gamepad.getAxes().set(0, event.getAxisValue(MotionEvent.AXIS_GAS));
-        gamepad.getAxes().set(1, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, historyPos));
-        gamepad.getAxes().set(2, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
-        gamepad.getAxes().set(3, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
-        gamepad.getAxes().set(4, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
+        state.getRawAxes().set(0, event.getAxisValue(MotionEvent.AXIS_GAS));
+        state.getRawAxes().set(1, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, historyPos));
+        state.getRawAxes().set(2, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
+        state.getRawAxes().set(3, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
+        state.getRawAxes().set(4, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
 
         Float gainControlValue = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historyPos);
         if(gainControlValue != 0) {
@@ -146,7 +153,6 @@ public class MainActivity extends Activity{
             } else if(gainControlValue < 0) {
                 state.decreaseGain();
             }
-
             DynamicToast.makeWarning(this, " " + state.getGain()).show();
         }
 
@@ -159,18 +165,17 @@ public class MainActivity extends Activity{
             } else if(throttleControlValue < 0) {
                 state.increaseThrottle();
             }
-
             DynamicToast.makeSuccess(this, " " + state.getThrottle()).show();
         }
 
-        views.stickPositionLeft.setX(views.defaultStickPositionLeftX + gamepad.getAxes().get(0) * 500);
-        views.stickPositionLeft.setY(views.defaultStickPositionLeftY - gamepad.getAxes().get(1) * 500);
-        views.stickPositionRight.setX(views.defaultStickPositionLeftX  + gamepad.getAxes().get(2) * 500);
-        views.stickPositionRight.setY(views.defaultStickPositionRightY - gamepad.getAxes().get(3) * 500);
+
+
+        views.updateAxesUI();
+
 
         //TODO: Add ControllerMode function here
 
-        String packet = gamepad.getAxesPacket(state, gamepad.getAxes());
+        String packet = net.getAxesPacket(state);
 
         net.setUDPPayload(packet);
     }
