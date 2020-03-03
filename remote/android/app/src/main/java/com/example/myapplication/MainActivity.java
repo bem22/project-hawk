@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
@@ -106,6 +107,9 @@ public class MainActivity extends Activity{
                 net.addTCPPacket(keyCode);
             }
 
+            if(keyCode == KeyEvent.KEYCODE_BUTTON_R1 || keyCode == KeyEvent.KEYCODE_BUTTON_L1) {
+            }
+
             if(keyCode == KeyEvent.KEYCODE_BUTTON_MODE) {
                 DynamicToast.makeSuccess(this, "Attempting to connect...").show();
                 views.connectButton.performClick();
@@ -159,6 +163,8 @@ public class MainActivity extends Activity{
         return super.onGenericMotionEvent(event);
     }
 
+    Toast tot;
+
     private void processJoystickInput(MotionEvent event,
                                       int historyPos) {
         InputDevice inputDevice = event.getDevice();
@@ -181,19 +187,29 @@ public class MainActivity extends Activity{
             } else if(gainControlValue < 0) {
                 state.decreaseGain();
             }
-            DynamicToast.makeWarning(this, " " + state.getGain()).show();
+            if(tot != null) {
+                tot.cancel();
+            }
+            tot = Toast.makeText(this, state.getGain() + " ", Toast.LENGTH_SHORT);
+            tot.show();
+
         }
 
         // For some reason DPAD DOWN and DPAD up are inverted (DPAD DOWN = 1, DPAD UP = -1)
-        Float throttleControlValue = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos);
-        if(throttleControlValue != 0) {
-            if(throttleControlValue > 0) {
+        Float throttlePlatform = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_Y, historyPos);
+        if(throttlePlatform != 0) {
+            if(throttlePlatform > 0) {
                 state.decreaseThrottle();
 
-            } else if(throttleControlValue < 0) {
+            } else if(throttlePlatform < 0) {
                 state.increaseThrottle();
             }
-            DynamicToast.makeSuccess(this, " " + state.getThrottle()).show();
+
+            if(tot != null) {
+                tot.cancel();
+            }
+            tot = Toast.makeText(this, state.getThrottlePlatform() + " ", Toast.LENGTH_SHORT);
+            tot.show();
         }
 
         views.updateAxesUI();

@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +16,10 @@ public class RemoteState {
 
     private final short BAROMETER_OFF = 1000;
     private final short BAROMETER_ON = 1500;
+
+    private boolean R1State;
+    private boolean L1State;
+
     private boolean leftThumbState;
     private boolean rightThumbState;
 
@@ -25,9 +28,9 @@ public class RemoteState {
         this.minGain = 1;
         this.maxGain = 1000;
 
-        this.throttle = 1000;
-        this.minThrottle = 1000;
-        this.maxThrottle = 2000;
+        this.throttlePlatform = 1000;
+        this.minThrottlePlatform = 1000;
+        this.maxThrottlePlatform = 2000;
     }
 
     /** This variable holds the updated values from all 6 axes on the sticks/shoulders
@@ -67,9 +70,9 @@ public class RemoteState {
     private int minGain;
     private int maxGain;
 
-    private int throttle;
-    private int minThrottle;
-    private int maxThrottle;
+    private int throttlePlatform;
+    private int minThrottlePlatform;
+    private int maxThrottlePlatform;
 
     private boolean armingStatus;
 
@@ -280,41 +283,41 @@ public class RemoteState {
     }
 
     void increaseThrottle() {
-        setThrottle(throttle + gain);
+        setThrottlePlatform(throttlePlatform + gain);
     }
 
     void decreaseThrottle() {
-        setThrottle(throttle - gain);
+        setThrottlePlatform(throttlePlatform - gain);
     }
 
-    int getThrottle() {
-        return throttle;
+    int getThrottlePlatform() {
+        return throttlePlatform;
     }
 
-    private void setThrottle(int throttle) {
-        if(throttle > maxThrottle) {
-            this.throttle = maxThrottle;
-        } else if(throttle < minThrottle) {
-            this.throttle = minThrottle;
+    private void setThrottlePlatform(int throttlePlatform) {
+        if(throttlePlatform > maxThrottlePlatform) {
+            this.throttlePlatform = maxThrottlePlatform;
+        } else if(throttlePlatform < minThrottlePlatform) {
+            this.throttlePlatform = minThrottlePlatform;
         } else {
-            this.throttle = throttle;
+            this.throttlePlatform = throttlePlatform;
         }
     }
 
-    public int getMinThrottle() {
-        return minThrottle;
+    public int getMinThrottlePlatform() {
+        return minThrottlePlatform;
     }
 
-    public void setMinThrottle(int minThrottle) {
-        this.minThrottle = minThrottle;
+    public void setMinThrottlePlatform(int minThrottlePlatform) {
+        this.minThrottlePlatform = minThrottlePlatform;
     }
 
-    public int getMaxThrottle() {
-        return maxThrottle;
+    public int getMaxThrottlePlatform() {
+        return maxThrottlePlatform;
     }
 
-    public void setMaxThrottle(int maxThrottle) {
-        this.maxThrottle = maxThrottle;
+    public void setMaxThrottlePlatform(int maxThrottlePlatform) {
+        this.maxThrottlePlatform = maxThrottlePlatform;
     }
 
     boolean getConnectionStatus() {
@@ -365,9 +368,9 @@ public class RemoteState {
 
     private void setAxes(ArrayList<Float> rawAxes) {
         this.axes.set(0, (int)(1000 * (1 + rawAxes.get(0))));
-        this.axes.set(1, (int)(1500 + (500 * rawAxes.get(1))));
+        this.axes.set(1, (int)(1500 - (500 * rawAxes.get(1))));
         this.axes.set(2, (int)(1500 + (500 * rawAxes.get(2))));
-        this.axes.set(3, (int)(1500 + (500 * rawAxes.get(3))));
+        this.axes.set(3, (int)(1500 - (500 * rawAxes.get(3))));
 
         this.axes.set(4, flightMode);
         this.axes.set(5, barometerStatus);
@@ -403,5 +406,9 @@ public class RemoteState {
         } else {
             barometerStatus = BAROMETER_OFF;
         }
+    }
+
+    void setDisramState() {
+
     }
 }
