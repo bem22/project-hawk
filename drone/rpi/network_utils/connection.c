@@ -34,10 +34,10 @@ void host_setup() {
 int bind_port() {
     if(bind(server_sock_tcp, (struct sockaddr*)&server_addr, sizeof(server_addr)) == 0 &&
             bind(server_sock_udp, (struct sockaddr*)&server_addr, sizeof(server_addr)) == 0) {
-        printf("%s %d\n", "server bound on", PORT );
+        printf("%s port %d.\n", "Server bound on", PORT );
         return 0;
     } else {
-        fprintf(stderr, "unable to bind on %d\n", PORT);
+        fprintf(stderr, "Unable to bind on %d. Port busy.\n", PORT);
         exit(1);
     }
 }
@@ -124,6 +124,7 @@ void *handle_tcp_connection() {
 int send_tcp_packet(char* buffer, int buffer_size) {
     if(connected) {
         write(server_sock_tcp, buffer, buffer_size);
+        printf("%s\n", "TCP Packet SENT");
     }
 }
 
@@ -192,7 +193,7 @@ void start_server() {
     }
 
     fflush(stdout);
-    printf("waiting for connections...\n");
+    printf("Waiting for connections\n");
 
     while(connection_count < MAX_PEER) {
 
@@ -200,7 +201,7 @@ void start_server() {
         if ((remote_fd_tcp = accept(server_sock_tcp, &remote_addr, &in_size)) > -1) {
             connection_count++;
             connected = 1;
-            printf("%s", "client connected\n");
+            printf("%s", "Client connected!\n");
 
             // Create a thread_tcp as a pointer and save it to the list of threads
             pthread_t *tcp_handler_thread = (pthread_t*) malloc(sizeof(pthread_t));

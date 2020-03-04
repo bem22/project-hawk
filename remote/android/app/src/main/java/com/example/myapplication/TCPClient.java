@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class TCPClient extends AsyncTask<String, Boolean, Void> {
@@ -18,7 +20,8 @@ public class TCPClient extends AsyncTask<String, Boolean, Void> {
     private String SERVER_IP;
     private ViewUtils views;
     private RemoteState state;
-
+    private Socket socket;
+    private PrintWriter mBufferOut;
 
     TCPClient(ArrayBlockingQueue<String> messages, String ipAddress, ViewUtils views, RemoteState state) {
         this.messages = messages;
@@ -28,24 +31,32 @@ public class TCPClient extends AsyncTask<String, Boolean, Void> {
     }
 
     @Override
-    protected Void doInBackground(String... strings) {
-        Thread.currentThread().setName("TCP Client");
+    protected void onPreExecute() {
+        super.onPreExecute();
+        InetAddress serverAddr = null;
         try {
-            InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
-            
-            //create a socket to make the connection with the server
-            int SERVER_PORT = 5000;
-
-            Socket socket = new Socket();
+            serverAddr = InetAddress.getByName(SERVER_IP);
+            socket = new Socket();
 
             //TODO: Check what kind of timeout I shall be looking for
             //socket.setSoTimeout(200);
+            int SERVER_PORT = 5000;
             socket.connect(new InetSocketAddress(serverAddr, SERVER_PORT), 200);
-            PrintWriter mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+            mBufferOut = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 
             // Disable Nagle's algorithm
             socket.setTcpNoDelay(true);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    protected Void doInBackground(String... strings) {
+        Thread.currentThread().setName("TCP Client");
+        try {
             if(socket.isConnected()) {
                 connected = true;
                 views.showConnectionIcon(true);
@@ -85,5 +96,4 @@ public class TCPClient extends AsyncTask<String, Boolean, Void> {
         views.showConnectionIcon(false);
         state.setConnectionState(false);
     }
-
 }

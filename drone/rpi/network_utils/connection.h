@@ -46,4 +46,6 @@ void *handle_tcp_connection();
 
 void *handle_udp_connection();
 
+int send_tcp_packet(char* buffer, int buffer_size);
+
 #endif //SERVER_CONNECTION_H

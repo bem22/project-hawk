@@ -4,9 +4,7 @@
 #include "../drone_utils/state.h"
 #include "../drone_utils/ppmer.h"
 #include "connection.h"
-#include <pigpio.h>
-#include <signal.h>
-
+#include "packetizer.h"
 
 bool action_arm() {
     if(drone_state.ARMED) {
@@ -19,12 +17,12 @@ bool action_arm() {
 }
 
 bool action_disarm() {
-
     drone_state.ARMED = 0;
     return 1;
 }
 
 bool action_land() {
+    send_tcp_packet(packetize("Hello", "World"), 39);
     return 1;
 }
 
@@ -38,9 +36,6 @@ bool action_update_axes(packet *p) {
         drone_state.AUX2 = atoi(p->params[5]);
         drone_state.AUX3 = atoi(p->params[6]);
         drone_state.AUX4 = atoi(p->params[7]);
-        fflush(stdout);
-        printf("%d %d %d %d %d %d %d %d\n", drone_state.THROTTLE, drone_state.ROLL, drone_state.PITCH, drone_state.AUX1, drone_state.YAW, drone_state.AUX2, drone_state.AUX3, drone_state.AUX4);
-
         return 1;
     } else return 0;
 }

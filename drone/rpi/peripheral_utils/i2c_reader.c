@@ -5,5 +5,5 @@
 #include "i2c_reader.h"
 
 char* read_voltage() {
-    return "Hello world";
+    return "12.3";
 }

@@ -6,6 +6,6 @@
 #ifndef SERVER_I2C_READER_H
 #define SERVER_I2C_READER_H
 
-char* read_voltage():
+char* read_voltage();
 
 #endif //SERVER_I2C_READER_H
