@@ -121,6 +121,13 @@ void *handle_tcp_connection() {
     return NULL;
 }
 
+int send_tcp_packet(char* buffer, int buffer_size) {
+    if(connected) {
+        write(server_sock_tcp, buffer, buffer_size);
+    }
+}
+
+
 int read_udp_packet_params(packet *p, char* buffer) {
     // This will read the number of params tag "PARAMC"
     char param_count_string[3] = {0};
