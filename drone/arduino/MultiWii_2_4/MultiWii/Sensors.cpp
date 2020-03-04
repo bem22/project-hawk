@@ -19,7 +19,7 @@ static void ACC_init();
 // ************************************************************************************************************
 //default board orientation
 #if !defined(ACC_ORIENTATION) 
-  #define ACC_ORIENTATION(X, Y, Z)  {imu.accADC[ROLL]  = X; imu.accADC[PITCH]  = Y; imu.accADC[YAW]  = Z;}
+  #define ACC_ORIENTATION(X, Y, Z)  {imu.accADC[ROLL]  = X; imu.accADC[PITCH]  = Y; imu.accADC[YAW] = Z;}
 #endif
 #if !defined(GYRO_ORIENTATION) 
   #define GYRO_ORIENTATION(X, Y, Z) {imu.gyroADC[ROLL] = X; imu.gyroADC[PITCH] = Y; imu.gyroADC[YAW] = Z;}
@@ -1149,7 +1149,7 @@ void Device_Mag_getADC() {
 // ************************************************************************************************************
 #if defined(MPU6050)
 #if !defined(MPU6050_ADDRESS)
-  #define MPU6050_ADDRESS     0x68 // address pin AD0 low (GND), default for FreeIMU v0.4 and InvenSense evaluation board
+  #define MPU6050_ADDRESS     0x69 // address pin AD0 low (GND), default for FreeIMU v0.4 and InvenSense evaluation board
   //#define MPU6050_ADDRESS     0x69 // address pin AD0 high (VCC)
 #endif
 
