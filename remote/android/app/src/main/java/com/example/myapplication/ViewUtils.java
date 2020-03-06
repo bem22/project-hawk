@@ -39,6 +39,6 @@ public class ViewUtils {
         stickPositionLeft.setX(defaultStickPositionHorizontal+ state.getRawAxes().get(1) * 500);
         stickPositionLeft.setY(defaultStickPositionVertical - state.getRawAxes().get(2) * 500);
         stickPositionRight.setX(defaultStickPositionHorizontal  + state.getRawAxes().get(3) * 500);
-        stickPositionRight.setY(defaultStickPositionVertical - state.getRawAxes().get(4) * 500);
+        //stickPositionRight.setY(defaultStickPositionVertical - state.getRawAxes().get(4) * 500);
     }
 }

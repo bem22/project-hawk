@@ -22,7 +22,6 @@ public class MainActivity extends Activity{
     SharedPreferences prefs;
 
     RemoteState state = new RemoteState();
-    PadUtils gamepad = new PadUtils();
     ViewUtils views;
     NetworkManager net;
 
@@ -115,9 +114,10 @@ public class MainActivity extends Activity{
                 views.connectButton.performClick();
             }
 
-            if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBR || keyCode == KeyEvent.KEYCODE_BUTTON_THUMBL) {
+            if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBR || keyCode == KeyEvent.KEYCODE_BUTTON_THUMBL || keyCode == KeyEvent.KEYCODE_BUTTON_SELECT) {
                 state.setButtonState(keyCode);
             }
+
 
             Log.d("hello", keyCode + "hello from keys");
             return true;
@@ -135,7 +135,6 @@ public class MainActivity extends Activity{
         }
 
         return super.onKeyUp(keyCode, event);
-
     }
 
 
@@ -177,7 +176,14 @@ public class MainActivity extends Activity{
         state.getRawAxes().set(1, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, historyPos));
         state.getRawAxes().set(2, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
         state.getRawAxes().set(3, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
-        state.getRawAxes().set(4, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos));
+
+        Float armControlValue = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos);
+
+        if(armControlValue > .9f && state.getPilotArmingStatus() && state.getSecurityArmButtonState()) {
+            state.disarmDrone();
+        } else if(armControlValue < -.9f && !state.getPilotArmingStatus() && state.getSecurityArmButtonState()) {
+            state.armDrone();
+        }
 
         Float gainControlValue = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_HAT_X, historyPos);
         if(gainControlValue != 0) {

@@ -4,12 +4,16 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.KeyEvent;
 
+import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 
 class NetworkManager {
     private TCPClient tcpClient;
+    private TCPListener tcpListener;
     private UDPClient udpClient;
     private String ipAddress;
+    private Socket socket;
+
     private ViewUtils views;
     private RemoteState state;
     private static Packetizer packetizer = new Packetizer();
@@ -19,13 +23,19 @@ class NetworkManager {
         this.ipAddress = ipAddress;
         this.views = views;
         this.state = state;
-        udpClient = new UDPClient(this.ipAddress);
     }
 
     void startConnection() {
+        socket = new Socket();
+
+        udpClient = new UDPClient(this.ipAddress);
         udpClient.sendPackets();
-        tcpClient = new TCPClient(messages, ipAddress, views, state);
+
+        tcpClient = new TCPClient(messages, ipAddress, views, state, socket);
         tcpClient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        tcpListener = new TCPListener(socket, state);
+        tcpListener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     void addTCPPacket(int keyCode) {

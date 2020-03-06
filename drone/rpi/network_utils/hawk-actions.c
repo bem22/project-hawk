@@ -22,7 +22,7 @@ bool action_disarm() {
 }
 
 bool action_land() {
-    send_tcp_packet(packetize("Hello", "World"), 39);
+    send_tcp_packet(buildPacket("BAT ", 1, 5, "12.5V"), 1024);
     return 1;
 }
 

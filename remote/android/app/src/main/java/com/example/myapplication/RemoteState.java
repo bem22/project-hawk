@@ -17,11 +17,15 @@ public class RemoteState {
     private final short BAROMETER_OFF = 1000;
     private final short BAROMETER_ON = 1500;
 
+    private final Integer ARM_STATUS_OFF = 1000;
+    private final Integer ARM_STATUS_ON = 1500;
+
     private boolean R1State;
     private boolean L1State;
 
     private boolean leftThumbState;
     private boolean rightThumbState;
+    private boolean securityArmState;
 
     RemoteState() {
         this.gain = 100;
@@ -58,6 +62,7 @@ public class RemoteState {
         return rawAxes;
     }
 
+    private int pilotArmingStatus = ARM_STATUS_OFF;
     private int flightMode = FLIGHT_MODE_ANGLE;
     private int barometerStatus = BAROMETER_OFF;
     private int magnetometerStatus= MAGNETOMETER_OFF;
@@ -375,7 +380,7 @@ public class RemoteState {
         this.axes.set(4, flightMode);
         this.axes.set(5, barometerStatus);
         this.axes.set(6, magnetometerStatus);
-        this.axes.set(7, 1000);
+        this.axes.set(7, pilotArmingStatus);
     }
 
     void setButtonState(int keyCode) {
@@ -385,6 +390,10 @@ public class RemoteState {
 
         if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBR) {
             rightThumbState = true;
+        }
+
+        if(keyCode == KeyEvent.KEYCODE_BUTTON_SELECT) {
+            securityArmState = true;
         }
 
         useState();
@@ -398,6 +407,10 @@ public class RemoteState {
         if(keyCode == KeyEvent.KEYCODE_BUTTON_THUMBR) {
             rightThumbState = false;
         }
+
+        if(keyCode == KeyEvent.KEYCODE_BUTTON_SELECT) {
+            securityArmState = false;
+        }
     }
 
     private void useState() {
@@ -408,7 +421,19 @@ public class RemoteState {
         }
     }
 
-    void setDisramState() {
+    void armDrone() {
+        pilotArmingStatus = ARM_STATUS_ON;
+    }
 
+    void disarmDrone() {
+        pilotArmingStatus = ARM_STATUS_OFF;
+    }
+
+    boolean getPilotArmingStatus() {
+        return (pilotArmingStatus == ARM_STATUS_ON);
+    }
+
+    boolean getSecurityArmButtonState() {
+        return (securityArmState);
     }
 }

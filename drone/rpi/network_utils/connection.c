@@ -123,8 +123,8 @@ void *handle_tcp_connection() {
 
 int send_tcp_packet(char* buffer, int buffer_size) {
     if(connected) {
-        write(server_sock_tcp, buffer, buffer_size);
-        printf("%s\n", "TCP Packet SENT");
+        int qq = write(remote_fd_tcp, buffer, buffer_size);
+        printf("%s, %d, %d\n", "TCP Packet SENT", qq, errno);
     }
 }
 
