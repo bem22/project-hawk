@@ -37,6 +37,9 @@ public class RemoteState {
         this.maxThrottlePlatform = 2000;
     }
 
+    private final double BATTERY_MAXIMAL_VOLTAGE = 12.6;
+    private final double BATTER_MINIMAL_VOLTAGE = 9.0;
+
     /** This variable holds the updated values from all 6 axes on the sticks/shoulders
      * axes[0] is THROTTLE
      * axes[1] is ROLL
@@ -109,6 +112,11 @@ public class RemoteState {
     private float maxThrottleTrimmerLevel;
     private float minThrottleTrimmerLevel;
 
+    private double batteryVoltage;
+
+    public int getBatteryPercentage (double batteryVoltage) {
+        return (int) Math.round((batteryVoltage - BATTER_MINIMAL_VOLTAGE) / (BATTERY_MAXIMAL_VOLTAGE - BATTER_MINIMAL_VOLTAGE) * 100);
+    }
 
     public int getThrottleTrimmerBasicLevel() {
         return throttleTrimmerBasicLevel;
@@ -435,5 +443,13 @@ public class RemoteState {
 
     boolean getSecurityArmButtonState() {
         return (securityArmState);
+    }
+
+    public double getBatteryVoltage() {
+        return batteryVoltage;
+    }
+
+    public void setBatteryVoltage(double batteryVoltage) {
+        this.batteryVoltage = batteryVoltage;
     }
 }

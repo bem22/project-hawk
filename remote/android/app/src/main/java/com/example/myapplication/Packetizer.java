@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class Packetizer{
+public class Packetizer {
 
     private String header;
     private String chunk;

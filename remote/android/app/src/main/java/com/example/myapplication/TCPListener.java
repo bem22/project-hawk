@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class TCPListener extends AsyncTask<String, Boolean, Void> {
     RemoteState state;
@@ -39,11 +40,25 @@ public class TCPListener extends AsyncTask<String, Boolean, Void> {
         while(state.getConnectionStatus()) {
             try {
                 mBufferIn.read(buffer);
+                publishProgress();
                 Log.d("Message from server:", String.valueOf(buffer));
             } catch (IOException e) {
-                e.printStackTrace();
+
             }
+
         }
         return null;
+    }
+
+    @Override
+    protected void onProgressUpdate(Boolean... values) {
+        super.onProgressUpdate(values);
+
+        String packet = Arrays.toString(buffer);
+
+        if(packet.contains("BAT")) {
+            Log.d("Hello", "WORLD");
+        }
+
     }
 }

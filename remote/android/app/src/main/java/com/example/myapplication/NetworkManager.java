@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import java.net.Socket;

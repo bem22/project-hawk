@@ -1,15 +1,7 @@
 package com.example.myapplication;
 
-import android.content.Intent;
-import android.util.Log;
 import android.view.InputDevice;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
-
-import com.example.myapplication.MenuActivity;
-import com.example.myapplication.Packetizer;
-import com.example.myapplication.RemoteState;
-import com.pranavpandey.android.dynamic.toasts.DynamicToast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
