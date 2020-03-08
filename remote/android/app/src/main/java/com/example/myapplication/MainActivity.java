@@ -70,6 +70,8 @@ public class MainActivity extends Activity{
         views.stickPositionLeft = findViewById(R.id.circle_left);
         views.stickPositionRight= findViewById(R.id.circle_right);
         views.connectionIcon = findViewById(R.id.connection_status);
+        views.batteryPercentageText = findViewById(R.id.battery_level_text);
+        views.batteryPercentageIcon = findViewById(R.id.battery_level_icon);
 
         views.connectButton = findViewById(R.id.connectButton);
         views.connectButton.setOnClickListener(new View.OnClickListener() {

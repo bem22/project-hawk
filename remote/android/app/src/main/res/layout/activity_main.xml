@@ -53,18 +53,24 @@
             app:layout_constraintRight_toLeftOf="@+id/connection_status"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="2sp"
-            android:layout_marginEnd="5sp"
+            android:layout_marginEnd="10sp"
             android:layout_height="28sp"
-            android:layout_width="wrap_content">
+            android:layout_width="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <TextView
+                android:id="@+id/battery_level_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textStyle="bold"
-                android:text=""/>
+                android:textSize="22sp"
+                android:textAlignment="center"
+                android:text=""
+                android:gravity="center"
+                android:textColor="@color/platinum"/>
             <ImageView
-                android:id="@+id/battery_level"
+                android:id="@+id/battery_level_icon"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -79,7 +85,9 @@
             android:layout_height="28sp"
             android:background="@drawable/signal_icon"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="10sp"
+            app:layout_goneMarginTop="2sp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

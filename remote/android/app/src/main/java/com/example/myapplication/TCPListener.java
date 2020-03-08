@@ -9,14 +9,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TCPListener extends AsyncTask<String, Boolean, Void> {
-    RemoteState state;
-    Socket socket;
+    private RemoteState state;
+    private Socket socket;
+    private ViewUtils views;
     private BufferedReader mBufferIn;
     private char[] buffer = new char[1024];
 
-    TCPListener(Socket socket, RemoteState state) {
+    TCPListener(Socket socket, RemoteState state, ViewUtils views) {
+        this.views = views;
         this.socket = socket;
         this.state = state;
     }
@@ -41,10 +45,7 @@ public class TCPListener extends AsyncTask<String, Boolean, Void> {
             try {
                 mBufferIn.read(buffer);
                 publishProgress();
-                Log.d("Message from server:", String.valueOf(buffer));
-            } catch (IOException e) {
-
-            }
+            } catch (IOException ignored) {}
 
         }
         return null;
@@ -54,11 +55,24 @@ public class TCPListener extends AsyncTask<String, Boolean, Void> {
     protected void onProgressUpdate(Boolean... values) {
         super.onProgressUpdate(values);
 
-        String packet = Arrays.toString(buffer);
+        String packet = new String(buffer);
+        processPacket(packet);
+    }
 
-        if(packet.contains("BAT")) {
-            Log.d("Hello", "WORLD");
+    private void processPacket(String packet) {
+        // Tokenize the packet
+        String[] tokens = packet.split("\\n");
+
+
+        String chunk = tokens[1].split(":")[1].trim();
+        Integer packetLength = Integer.valueOf(tokens[2].split(":")[1].trim());
+        Integer numberOfParameters = Integer.valueOf(tokens[3].split(":")[1].trim());
+
+        if(chunk.equals("BAT") && numberOfParameters == 1) {
+            // Expect one parameter
+            String bv = tokens[4];
+            state.setBatteryVoltage(Float.parseFloat(bv));
+            views.updateBatteryStatus(state.getBatteryPercentage(Double.parseDouble(bv)));
         }
-
     }
 }

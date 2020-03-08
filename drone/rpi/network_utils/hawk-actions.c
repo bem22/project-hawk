@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "../drone_utils/state.h"
 #include "../drone_utils/ppmer.h"
+#include "../peripheral_utils/i2c_reader.h"
 #include "connection.h"
 #include "packetizer.h"
 
@@ -22,7 +23,7 @@ bool action_disarm() {
 }
 
 bool action_land() {
-    send_tcp_packet(buildPacket("BAT ", 1, 5, "12.5V"), 1024);
+    send_tcp_packet(buildPacket("BAT ", 1, 5, get_battery_voltage()), 1024);
     return 1;
 }
 

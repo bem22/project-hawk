@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class ViewUtils {
 
@@ -23,9 +24,8 @@ public class ViewUtils {
     CircleView stickPositionRight;
     Button connectButton;
     ImageView connectionIcon;
-
-    public int[] stickPositionLeftXY= new int[2];
-    public int[] stickPositionRightXY = new int[2];
+    TextView batteryPercentageText;
+    ImageView batteryPercentageIcon;
 
     public void showConnectionIcon(boolean connected) {
         if(connected) {
@@ -40,5 +40,18 @@ public class ViewUtils {
         stickPositionLeft.setY(defaultStickPositionVertical - state.getRawAxes().get(2) * 500);
         stickPositionRight.setX(defaultStickPositionHorizontal  + state.getRawAxes().get(3) * 500);
         //stickPositionRight.setY(defaultStickPositionVertical - state.getRawAxes().get(4) * 500);
+    }
+
+    void updateBatteryStatus(int batteryPercentage) {
+        if(batteryPercentage > 20) {
+            batteryPercentageIcon.setBackgroundResource(R.drawable.battery_level_good);
+            batteryPercentageText.setText(String.valueOf(batteryPercentage+"%"));
+        } else if(batteryPercentage < 20) {
+            batteryPercentageIcon.setBackgroundResource(R.drawable.battery_level_low);
+            batteryPercentageText.setText(String.valueOf(batteryPercentage+"%"));
+        } else {
+            batteryPercentageIcon.setBackgroundResource(R.drawable.battery_level_unknown);
+            batteryPercentageText.setText("");
+        }
     }
 }

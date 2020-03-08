@@ -33,7 +33,7 @@ class NetworkManager {
         tcpClient = new TCPClient(messages, ipAddress, views, state, socket);
         tcpClient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        tcpListener = new TCPListener(socket, state);
+        tcpListener = new TCPListener(socket, state, views);
         tcpListener.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -85,5 +85,7 @@ class NetworkManager {
 
         else return "";
     }
+
+
 
 }
