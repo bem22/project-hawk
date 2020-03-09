@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <linux/i2c-dev.h>
 
-float battery_voltage;
 
 char* read_voltage();
 char* get_battery_voltage();

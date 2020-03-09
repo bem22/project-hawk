@@ -72,7 +72,7 @@ public class TCPListener extends AsyncTask<String, Boolean, Void> {
             // Expect one parameter
             String bv = tokens[4];
             state.setBatteryVoltage(Float.parseFloat(bv));
-            views.updateBatteryStatus(state.getBatteryPercentage(Double.parseDouble(bv)));
+            views.updateBatteryStatus(state.getBatteryPercentage(state.getBatteryVoltage()));
         }
     }
 }

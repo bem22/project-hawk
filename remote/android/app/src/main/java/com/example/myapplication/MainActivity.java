@@ -178,7 +178,7 @@ public class MainActivity extends Activity{
         state.getRawAxes().set(1, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_X, historyPos));
         state.getRawAxes().set(2, -PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Y, historyPos));
         state.getRawAxes().set(3, PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_Z, historyPos));
-
+        state.getRawAxes().set(4, event.getAxisValue(MotionEvent.AXIS_BRAKE));
         Float armControlValue = PadUtils.getCenteredAxis(event, inputDevice, MotionEvent.AXIS_RZ, historyPos);
 
         if(armControlValue > .9f && state.getPilotArmingStatus() && state.getSecurityArmButtonState()) {

@@ -4,6 +4,7 @@ import android.view.KeyEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class RemoteState {
 
@@ -112,7 +113,7 @@ public class RemoteState {
     private float maxThrottleTrimmerLevel;
     private float minThrottleTrimmerLevel;
 
-    private double batteryVoltage;
+    private double batteryVoltage = 100;
 
     public int getBatteryPercentage (double batteryVoltage) {
         return (int) Math.round((batteryVoltage - BATTER_MINIMAL_VOLTAGE) / (BATTERY_MAXIMAL_VOLTAGE - BATTER_MINIMAL_VOLTAGE) * 100);
@@ -380,7 +381,10 @@ public class RemoteState {
     }
 
     private void setAxes(ArrayList<Float> rawAxes) {
-        this.axes.set(0, (int)(1000 * (1 + rawAxes.get(0))));
+        ReentrantLock lock = new ReentrantLock();
+        Integer throttle = throttlePlatform + (int)(500 * rawAxes.get(0));
+
+        this.axes.set(0, throttle);
         this.axes.set(1, (int)(1500 - (500 * rawAxes.get(1))));
         this.axes.set(2, (int)(1500 + (500 * rawAxes.get(2))));
         this.axes.set(3, (int)(1500 - (500 * rawAxes.get(3))));
@@ -450,6 +454,8 @@ public class RemoteState {
     }
 
     public void setBatteryVoltage(double batteryVoltage) {
-        this.batteryVoltage = batteryVoltage;
+        if(batteryVoltage < this.batteryVoltage) {
+            this.batteryVoltage = batteryVoltage;
+        }
     }
 }

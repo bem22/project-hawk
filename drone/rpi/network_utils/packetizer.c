@@ -1,7 +1,7 @@
 //
 // Created by bem22 on 3/4/20.
 //
-
+int debug = 1;
 #include "packetizer.h"
 char* protocolHeader = "HAWK 1.0 RSP\n";
 int protocolHeaderLength = 13;
@@ -85,7 +85,13 @@ char* buildPacket(char* chunk, int paramCount, int payloadLength, char* payload)
     strncpy(packet + cursor, "\n", 1);
     cursor ++;
 
-    //TODO: Add params here
+    if(debug) {
 
+        printf("====\n Packet;\n");
+
+        printf("%s\n", packet);
+
+        printf("====\n");
+    }
     return packet;
 }

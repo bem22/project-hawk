@@ -16,6 +16,7 @@ typedef struct state {
     unsigned short AUX2;
     unsigned short AUX3;
     unsigned short AUX4;
+    char* battery_voltage;
 } state;
 
 state drone_state;
