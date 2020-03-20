@@ -1,0 +1,262 @@
+\documentclass{IEEEtran}
+\usepackage{alphabeta}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{indentfirst}
+\usepackage{multicol}
+\usepackage{natbib}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{algorithm2e}
+\usepackage{bm}
+\SetKwInput{KwPre}{Preconditions}
+
+\newcommand{\minuseq}{\mathrel{-}=}
+\newcommand{\ubar}[1]{\text{\b{$#1$}}}
+
+\usepackage{multicol}
+\usepackage{graphicx}
+ 
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0em}
+ 
+\title{Year in industry report}
+\author{Mihai Emilian Buduroi}
+\date{September 2019}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\begin{document}
+\begin{titlepage}
+\begin{figure}[hbt!]
+\centering
+\includegraphics{logo_uni}
+\end{figure}
+
+\centering
+
+\textsc{\Huge University of Birmingham}\\[0.4cm]
+\textsc{\LARGE School of Computer Science}\\[1.5cm]
+\textsc{\huge Final Year Project - Project HAWK}\\[2.5cm]
+\textsc{\Large Mihai-Emilian Buduroi, 1680948}\\[2.0cm]
+\end{titlepage}
+
+\pagebreak
+
+\section*{Abstract}
+\begin{it}
+In which I intend to explore the limits of LTE connectivity by building a drone infrastructure, and the protocols and endpoint services associated with controlling it.
+\end{it} \\
+
+\section{Introduction}
+Remote controlled devices have become very popular in recent years, especially in the flying sector - multi-rotor flying machines becoming widely available for purchase, and people are now closer to the feeling of being able to fly by using real-time first person view (FPV) systems. Achieving such results requires systems that are designed to withstand the demands of the reality. However, the real world proves that the seams of a system will impose limits on the capabilities of such flying devices. One such limit is range: How far can one fly reliably? In practice this can be determined by two factors: energy storage (battery) and magnetic wave reachability (or signal).
+
+\subsection{The Battery}
+The main limiting factors of modern batteries are their cost, size and storage capacity. That is, \begin{it} power density \end{it} is the determining indicator when discussing energy storage in the form of electricity.
+\newline
+
+\begin{center}\includegraphics[scale=0.5]{battery-cell-energy-density.jpg}\end{center}
+\begin{it}\begin{center} Fig. 1 - Energy Density Comparison of Size and Weight \end{center}\end{it}
+Lithium Polymer batteries have come a long way in the last eight years and companies like Tesla, Volskwagen and Toyota have developed business models from engineering vehicles that run on Li-Po batteries, which means the technology will evolve and the power density will increase in the short future. However, a good drone design should aim to minimize weight and this is one of the reasons I have engineered a custom printed circuit-board - It contains all the necessary circuitry in one light package.
+
+
+\pagebreak
+\subsection{Signal range}
+In the radio controlled drones world the range is usually dictated by the reach of the 2.4GHz~2.4835GHz band. Most controller-receiver systems will operate under the range of 150 meters to 1.4 miles (2km)\footnote{ DJI spark can fly as fara as 1.4 miles} with exceptions such as the \hyperlink{https://auteldrones.com/products/evo}{Autel Robotics's EVO} which can fly as far as 4.3 miles (7km) in an open area.
+\newline
+All these solutions have a quality in common: they all use private ~2.4GHz point-to-point networks. The reason for this becoming standard is that FCC (or Ofcom for UK) allowed this spectrum of frequencies for public use  \footnote{\hyperlink{https://transition.fcc.gov/oet/spectrum/table/fcctable.pdf}{FCC Frequency Table rev 2020} page 67} long before the 3G networks or even WiFi were popular.
+\newline
+\newline
+This raises a question: If the reliability of public LTE networks has increased so much in the past decade, why are not there more solutions using this technology?
+\subsection*{What is LTE and why was cellular internet not so fast before it?}
+According to Ofcom \footnote{\hyperlink{https://www.ofcom.org.uk/phones-telecoms-and-internet/advice-for-consumers/advice/what-is-4g}{Ofcom article} link} 4G is the fourth generation of mobile phone technology and follows on from 2G and 3G.
+\newline
+In order to understand why it is so fast, the underlying technology beneath it needs an explanation.
+
+\subsection*{2G, 3G, 4G `soft-standard` and LTE}
+When carriers talk about \emph{'G'}, they mean the \textbf{g}eneration of wireless technology used to transmit information. 
+\newline
+\newline
+In 1971, in Finland, the Autoradiopuhelin (ARP) was considered the first public mobile network. It was operational in the 150 MHz band, and calls were manually switched. This was considered to be the 0G technology or pre-1G.
+\newline
+\newline
+The first generation (or 1G) to be standardized in many countries around the world was introduced in the 1980s and  used analog signalling. The transmission speed of this technology was only 2.4Kbps and was only supporting voice. Worse, there was no encryption on the calls, so anyone with a radio scanner could drop in on a call.
+\newline
+\newline
+In 1991, under the GSM standard developed by ETSI (The European Telecommunications Standards Institute), 2G was deployed in Finland. This expanded over time to include data communications, first by circuit-switched transport, then by packet data transport via General Packet Radio Service (GPRS), and EDGE \footnote{Enhanced Data Rates for GSM Evolution}. This was the first fully digital network.
+\pagebreak
+\newline
+\newline
+
+The third generation is an upgrade from the 2.5G and 2.5G GPRS networks for faster data transfer speed. This aimed to standardize the network protocol used by vendors and it meant that users could access data from any location as "data packets" in order to surf the web. 3G, also known as UMTS\footnote{Universal Mobile Telecommunications System}, uses wideband code division multiplexing (W-CDMA, which I will address shortly). Unlike EDGE (IMT Single-Carrier, based on GSM) and CDMA2000 (IMT Multi-Carrier), UMTS requires new base stations and new frequency allocations.
+\newline
+\newline
+In March 2009 ITU-R \footnote{International Telecommunications Union-Radio communications sector} specified a set of requirements for 4G standards, the IMT-Advanced specification, requiring 100Mbps\footnote{12.5 MB/s} for high mobility communication (moving cars, trains) and 1Gbps for stationary communication. The speeds above were achieved in favourable experimental conditions and providers were not able to deliver the ITU-R standards. Cellular marketing hype has only added to the confusion as providers marketed their services as "4G" when they could not even provide 1/5 of the IMT-R standard speeds for stationary user. For example, in the US AT&T and T-Mobile would market HSPA+ (which is basically an upgraded version of 3G). Other marketers would market LTE as 4G, albeit LTE only delivers half of the theoretical stationary bitrate of the IMT standard.
+\newline
+\begin{center}\includegraphics[scale=.5]{lies.png}\end{center}
+\begin{it}\begin{center}Fig. 2: Comparison between 4G standard and marketed 4G bitrate by \hyperlink{https://money.cnn.com/2010/12/01/technology/4g_myth/index.htm}{Money CNN} \end{center}\end{it}
+However ITU-R later decreted that any technology that would require replacing non-backward compatible infrastructure deployment and would be far superior compared to the 3G standard, could nevertheless be called `4G`\footnote{\hyperlink{http://www.itu.int/net/pressoffice/press_releases/2010/48.aspx#.Xm5Btyn7RhE}{Link to ITU communication}}.
+
+\subsection*{Why is theoretical 4G so much faster than the real world infrastructure?}
+\noindent The reason is that in experimental space, the testing conditions can be maneuvered in favour of obtaining benchmark results. For example, when the prototype equipment is tested, the transmitter and receiver are aligned in such a way that there is no blocking matter other than air. Another reason is network capacity. Providers have to share the networks with millions of users. The bottleneck here can be found in the equipment that delivers the internet: routers, switches and servers.
+
+\subsection*{So, with the theory about G's and RF explained: what is the difference between LTE and private RF space for radio controlled devices?}
+\newline
+\noindent The difference between the two lie in the protocol used to transmit data. We could compare the later with FDMA\footnote{Frequency-division multiple access is a channel access method used in some multiple-access protocols.} (Fig. 3 b) which is what was used to drive 1G in the 1980's. That is, it is an analog signal that can hold up to a number of channels dividing a frequency spectrum. The limits on this protocol are: high noise, unencrypted signal and low range driven by its private nature. On the other hand, starting from 3G, the protocol encapsulated code division (CDMA Fig. 3 d) and one of the features of the 4G standard was orthogonal frequency division (OFDMA \footnote{Orthogonal-frequency-division multiple access} Fig. 3 c). That meant that the airtime was split more efficiently in a different orientation: Instead of using the frequency spectrum, the users were allocated sequential time slots. Respectively, OFDMA increased the efficiency by multiplexing both time and frequency. Besides the multiplexing techniques used to increase bitrate, the protocol is fully digital, which allows the IP stack to work and we can now speak about data transfer and packets.
+\newline
+\begin{center}\includegraphics[scale=.3]{FDMA.png}\end{center}
+\begin{it}\begin{center}Fig. 3: a) TDMA, b) FDMA, c) OFDMA, d) CDMA/SDMA, e) Possible NoMA Solution \end{center}\end{it}
+
+Because of its public nature, much like GPS satellites, two endpoints can reach each other as long as each can communicate to signal towers. Given that in most countries the signal infrastructure for LTE networks is shared between operators creating an application using public cellular network is both cost efficient (infrastructure is already in place) and provides broader limits of reachability \footnote{https://www.youtube.com/watch?v=oYRMYSIVj1o}.
+\newline
+\pagebreak
+\newline
+\section{Related work}
+For flying a drone using public cellular internet the following requirements are imposed:
+\begin{itemize}
+    \item 99.9\% percent reliability with a maximum packet transmission delay of 50ms
+    \item Use public LTE network optimized for pedestrians and people inside buildings
+    \item Use a space that is covered by one or more LTE towers which can manage the handover when the drone moves
+\end{itemize}
+These requirements arise from the need to safely fly the aircraft over extended distances without losing control.
+\newline
+There are several examples which managed to demonstrate the capabilities of LTE connection in drone flight use cases and real time reliable data transfer on moving objects.
+\newline
+\newline
+One of them is the implementation of LTE connectivity in Tesla cars which facilitates the deployment of new firmware for the automobile and the high bitrate downlink for the infotainment system (ultra-hd video streaming and music). Besides, there is also real time data travelling on the uplink segment (from the car to the Tesla servers) which transports video and photos from the environments where the cars are driven that is used for training the neural networks used for the autopilot feature.
+\pagebreak
+\newline
+\pagebreak
+\section{Architecture}
+The architecture is based on a client-server model that will communicate using a lightweight TCP/UDP custom  protocol over LTE.
+\subsection{The server}
+The server is the logical engine for information transmission. It communicates to three different devices:
+\newline
+\newline
+\noindent In order to achieve all the proposed communication goals, the processor architecture on which the server is going to be run will have to support multi-threading. On top of this, because the application is run remotely, powered by a battery, it also has to be lightweight and efficient. Last but not least, it has to satisfy the connectivity requirements: I2C Bus, USB and direct access to general purpose  I/O pins (GPIO). Therefore, a low-cost portable computer was chosen for the task: Raspberry Pi Zero which only has 9 grams and packs up 512MB of RAM and a single-core 1GHz processor. This connects to three devices (as shown in Fig 4): 
+\begin{itemize}
+    \item The pilot through a custom PPM\footnote{Pulse Position Modulation} protocol using a GPIO port
+    \item A power meter through the Raspberry Pi I2C Bus using the SCL/SDA port
+    \item The LTE interface from Huawei (E3372) via USB
+\end{itemize}
+\begin{center}\includegraphics[scale=.45]{server_datapath.png}\end{center}
+\begin{it}\begin{center}Fig. 4 - Server datapath \end{center}\end{it}
+On the Raspberry, the operating system is a flavour of Linux in the form of Raspbian Lite. Lite was chosen because it comes with little to no bloatware\footnote{Extra apps that might be necessary if one used the Desktop part of the OS, such as Minecraft - Yes, you can play Minecraft on a \$5 PC}.
+On the other hand, Linux comes packed with a C compiler (which will be necessary for generating binaries) and the \textbf{glibc} which has implementations for Linux I2C communication, threading, precise hardware timers controllers and sockets. All of the tools mentioned are necessary to transform the diagram above into software.
+\pagebreak
+\newline
+In the following lines, there will be an explanation about how the communication is realized with each of the components in the list above. This will be done from the perspective of the Linux system, so without delving too deeply in the details of the target systems. This will be covered later.
+\newline
+\subsection*{\textbf{1. The PPM Protocol - communicating to the pilot}}
+PPM stands for Pulse-Position Modulation. This protocol is an extension to the PWM (Pulse-Width Modulation) protocol. To understand PPM, PWM needs to be understood first.
+\begin{center}\includegraphics[scale=.24]{pwm-duty.png}\end{center}
+\begin{it}\begin{center}Fig. 5 - PWM and duty cycle \end{center}\end{it}
+\subsection*{What is a pulse?}
+As the dictionary says, pulses are "a single vibration or short burst of sound, electric current, light, or other wave". Such a pulse can be generated by a relatively simple device. For example, if one was to switch the light on and of in the room and the electrical activity in the circuit was monitored, it would generate a weave that looks like one of the above in Fig. 5. 
+\newline
+\newline
+
+This is exactly what Pulse-Width Modulation is: A way to transmit data at high refresh rates. Looking at Figure 5, two types of lines can be observed: Horizontal ones that have the same orientation as the timeline (to the right) and vertical lines. The vertical lines represent the switching between ON/OFF. When the value is switched from OFF to ON (from GROUND to positive voltage), the line is called \textbf{rising edge} and the opposite is called \textbf{falling edge}. The \textbf{duty cycle} is the period between the rising edge and the falling edge.
+\newline
+This protocol is usually used to control servo motors or ESCs \footnote{electronic speed controllers} like this paper is going to showcase later.
+\newline
+\newline
+To sum up, the conclusion is that the PWM protocol can transfer information that represents values ranging from 0\% to 100\% duty cycle, but the actual concrete quantities are implementation specific and depend on the accuracy of the timers used to generate the voltage switches.
+
+\subsection*{So what is PPM?}
+As said earlier, PPM takes PWM and extends it by adding an extra dimension to it. Instead of only using the width of the duty cycle to represent values, it also uses the \textbf{position} (in time). This is useful for storing multiple values in the same wave \textbf{train}. Besides the dimension added, the PPM also adds some complexities. One of them is that the duty cycle is no longer represented by the rising edge - falling edge pair. Instead, consecutive rising edges are used.
+\newline
+\begin{center}\includegraphics[scale=.5]{ppm2.png}\end{center}
+\begin{it}\begin{center}Fig. 6 - PPM theoretical diagram \end{center}\end{it}
+In Figure 6 is represented a PPM train (8 PWM pulses linked in a sequence). Each yellow bar represents a period of time in which the switch circuit pulls the signal high. 
+\newline
+This is how it looks on the oscilloscope: 
+\newline
+\begin{center}\includegraphics[scale=.5]{ppm.png}\end{center}
+\begin{it}\begin{center}Fig. 7 - PPM oscilloscope reading\end{center}\end{it}
+When the \textbf{rising edge} is detected (i.e the signal is switches from Ground to a positive voltage - we will assume 5 volts from here on) a logic value is set. This starts a timer that does not stop until the next \textbf{rising edge} is detected. Therefore, if the information in Figure 6 is combined with the information in Figure 7, the following deduction is natural: Each channel represents the value 1000 (between each rising edge there is a HIGH signal of 300{\mu}s and a LOW signal of 700. The combination of the two is called a \textbf{frame}). By keeping the HIGH pulses constant at 300{\mu}s and altering the values of the LOW pulse, complex values can be sent in a 20ms (20000{\mu}s) window as follows:
+\newline
+\begin{center}\includegraphics[scale=.5]{ppm3.png}\end{center}
+\begin{it}\begin{center}Fig. 8 - PPM practical example\end{center}\end{it}
+The following values can be observed:
+\begin{multicols}{2}
+\begin{itemize}
+    \item Channel 1 - 1875
+    \item Channel 2 - 650
+    \item Channel 3 - 1700
+    \item Channel 4 - 1350
+    \item Channel 5 - 1700
+    \item Channel 6 - 1000
+    \item Channel 7 - 1000
+    \item Channel 8 - 1000
+\end{itemize}
+\end{multicols}
+\pagebreak
+\subsection*{Synchronization}
+In order to synchronize this signal a gap is required. This gap can be observed both in all three figures and is depicted as a long low signal. To be successful, synchronization has to assume three main properties of the two systems that try to communicate:
+\begin{itemize}
+    \item Both of them use the same window size(i.e 20ms or 20000{\mu}s in this case)
+    \item The falling edge follows the rising edge after a constant duration
+    \item Both systems have timers capable of 1/10{\mu}s accuracy
+\end{itemize}
+
+\subsection*{Implementation}
+With the theory in mind, implementing this in C depends on the accuracy of the hardware timers. I used a library called \textbf{\hyperlink{http://abyz.me.uk/rpi/pigpio/}{PIGPIO}} that allows the control of GPIO 4 with \textbf{nanosecond} accuracy. This accuracy is better than the requirement for this protocol.
+\newline
+\newline
+There was one remarkable requirement imposed by the library: conserving the signal trains for at least two cycles to achieve synchronisation. That is, it was necessary to wait for two cycles to pass before resetting the memory for the particular train. Keeping track of which train was sent was also necessary.
+\newline
+\newline
+The values that were fed to the PPM encoder were served by a structure that, as will be made more clear later, is updated by the network controller.
+   
+\subsection*{\textbf{2. The I2C protocol - communicating to the power meter}}
+\subsection*{What is I2C?}
+I2C, also known as two-wire bus interface. This is a popular digital communication protocol that allows one or more master devices to send and receive data to up to 112 slave devices. In this case, the Raspberry Pi is the master device and the \textbf{INA219} sensor power meter is the slave device. This protocol works using the principle of synchronization. Both devices write and listen to the pulses transmitted through the common line synchronously. The synchronisation is realized by the SCL wire. This is merely a constant alternating pulse between GROUND and signal voltage (3.3V in this case). The SDA wire is the medium that transfers digital information. 
+\begin{center}\includegraphics[scale=.3]{i2c.png}\end{center}
+\begin{it}\begin{center}Fig. 9 - Generic i2c message \end{center}\end{it}
+\pagebreak
+This follows a robust protocol as shown in Fig. 9:
+\begin{itemize}
+    \item The master initiates a START condition
+    \item The master sends an 7 bit address of the device and a bit representing the intention for WRITE
+    \item The slave responds with an ACK/NACK condition
+    \item On ACK, the master sends the register it intends to write to and the device will store this address for later use.
+    \item The slave responds with an ACK/NACK condition
+    \item On ACK, the master can continue by either sending a byte of data to change the contents of the register in step 4 or re-initiate the START condition and send the address of the device followed by a READ bit in order to read data.
+\end{itemize}
+
+
+\subsection*{Implementation}
+The hardware requirement for this protocol to work properly is that both the voltage powering sensor and the voltage on the SDA/SCL lines were equal. Also, the pull up resistors values have to be carefully considered, but in this context the Raspberry Pi fulfills both requirements. An example where pull up resistors had to be chosen manually will be presented later in this paper.
+\newline
+\newline
+Software wise, there was a need to interact with the i2c character device in Linux. This character device has a library called \textit{linux/i2c\_dev}. This library supports exactly the steps described above and in Fig. 9
+\newline
+\newline
+Both reading and writing is required in order to use the sensor at maximum potential. The read values are used to update the global \textbf{drone\_state} structure which holds variables for voltage, current and power.
+
+\subsection*{\textbf{3. The HAWK 1.0 Protocol - communicating to the internet}}
+\subsection*{Why it was developed}
+\noindent Communicating to the drone via LTE broadband brought up a set of requirements for the protocol:
+\begin{itemize}
+    \item Be reliable when sending critical commands such as ARM/DISARM/LAND/FLIGHTMODE
+    \item Be fast when sending stick movement commands (axes update)
+    \item Be lightweight and robust to keep bit rate low
+\end{itemize}
+None of the available protocols were satisfying all the requirements so this had to be engineered around the reliability of TCP and the speed of UDP. For this reason, the HAWK 1.0 protocol was based on both TCP and UDP to transmit information. The information is transported from the Android client to the C server and back. This means that both ends have the ability to generate and read this protocol.
+\newline
+\newline
+\noindent Assuming 60 bytes (maximum) for the TCP header and a number of N=5 values in the parameters list the packet size would be 126 bytes\footnote{41 bytes (from header) 25 bytes from parameters and 60 bytes from the TCP header}.
+\begin{center}\includegraphics[scale=.3]{hawkone.png}\end{center}
+\begin{it}\begin{center}Fig. 10 - HAWK 1.0 structure \end{center}\end{it}
+
+
+\begin{figure*}
+\begin{center}\includegraphics[scale=1]{pcbschematic.png}\end{center}
+\begin{it}\begin{center}Fig. 2 - Project HAWK PCB Schematic \end{center}\end{it}
+\end{figure*}
+\end{document}
