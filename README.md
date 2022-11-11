@@ -1,4 +1,4 @@
-# hawk-final-year-project
-Final year project
+# Project HAWK - A final year project from back in 2020 at The University of Birmingham
 
-https://www.youtube.com/watch?v=G-JmU4yYcoE&feature=youtu.be&ab_channel=MihaiEmilian
+[![Alternate Text]({image-url})]({video-url} "Link Title")
+[![Project HAWK]]({https://www.youtube.com/watch?v=G-JmU4yYcoE&feature=youtu.be&ab_channel=MihaiEmilian} "Presentation Video")
